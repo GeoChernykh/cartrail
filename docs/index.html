@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarTrail UA — міграція авто та картки моделей</title>
+<meta name="description" content="Карта міжрегіональної міграції вживаних авто та картки моделей, побудовані на реєстрі МВС України 2013–2026.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<nav class="rail" aria-label="Розділи">
+  <button type="button" data-screen="map" aria-current="true" title="Карта міграції авто">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 20 3 17V4l6 3 6-3 6 3v13l-6 3-6-3Z"/><path d="M9 7v13M15 4v13"/></svg>
+    <span class="sr-only"></span>
+  </button>
+  <button type="button" data-screen="model" title="Картка моделі">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6M7 17h4"/></svg>
+  </button>
+  <button type="button" data-screen="about" title="Про дані">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>
+  </button>
+</nav>
+
+<main class="slab">
+  <div class="slab-head">
+    <div>
+      <h1 id="title">Карта міграції авто</h1>
+      <p class="sub" id="subtitle"></p>
+    </div>
+    <div class="seg" id="seg" role="group" aria-label="Період"></div>
+  </div>
+
+  <section class="about" id="about" hidden aria-labelledby="about-h"></section>
+
+  <div class="filters" id="filters"></div>
+
+  <section id="screen-map" class="screen">
+    <div class="row row-kpi" id="map-kpis"></div>
+    <div class="row row-112">
+      <div class="card">
+        <h2>Найбільший приплив</h2>
+        <p class="win">Області, куди авто приїжджають</p>
+        <div class="chart" id="c-inflow"></div>
+      </div>
+      <div class="card">
+        <h2>Найбільший відтік</h2>
+        <p class="win">Області, звідки авто виїжджають</p>
+        <div class="chart" id="c-outflow"></div>
+      </div>
+      <div class="card tall">
+        <h2>Баланс областей і потоки</h2>
+        <p class="maplabel" id="map-note">Регіон реєстрації власника — проксі, не місцезнаходження авто.</p>
+        <div class="legend" id="map-legend"></div>
+        <div class="chart" id="c-map"></div>
+      </div>
+    </div>
+    <div class="row row-11">
+      <div class="card">
+        <h2>Матриця напрямків</h2>
+        <p class="win">Найактивніші області, решта — в групі «Інші області»</p>
+        <div class="chart" id="c-chord"></div>
+      </div>
+      <div class="card">
+        <h2>Найбільші коридори</h2>
+        <p class="win" id="corridor-win"></p>
+        <div class="scrolly tablewrap" id="c-corridors"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-model" class="screen" hidden>
+    <div class="row row-kpi" id="model-kpis"></div>
+    <div class="row row-112">
+      <div class="card">
+        <h2>Пальне</h2>
+        <p class="win">2013–2026</p>
+        <div class="chart" id="c-fuel"></div>
+      </div>
+      <div class="card">
+        <h2>Колір</h2>
+        <p class="win">2013–2026</p>
+        <div class="chart" id="c-color"></div>
+      </div>
+      <div class="card tall">
+        <h2>Реєстрації за роками</h2>
+        <p class="win">2013–2026 · 2026 — неповний рік</p>
+        <div class="legend" id="trend-legend"></div>
+        <div class="chart" id="c-trend"></div>
+      </div>
+    </div>
+    <div class="row row-11">
+      <div class="card">
+        <h2>Регіональна концентрація</h2>
+        <p class="win">2013–2025 · область реєстрації власника</p>
+        <div class="chart" id="c-region"></div>
+      </div>
+      <div class="card">
+        <h2>Ранг у національному топі</h2>
+        <p class="win">2013–2026 · 1 — найпопулярніша модель року</p>
+        <div class="legend" id="rank-legend"></div>
+        <div class="chart" id="c-rank"></div>
+      </div>
+    </div>
+    <div class="row row-11">
+      <div class="card">
+        <h2>Тип власника</h2>
+        <p class="win">2013–2026 · реєстрації за роками, поділ на фізичних і юридичних осіб</p>
+        <div class="legend" id="own-legend"></div>
+        <div class="chart" id="c-owner"></div>
+      </div>
+      <div class="card">
+        <h2>Тип кузова</h2>
+        <p class="win">2013–2026</p>
+        <div class="chart" id="c-body"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="vendor/d3.v7.min.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -150,6 +150,17 @@ _DATE_PATTERNS = [
 ]
 
 
+def norm_plate_sql(column: str = "N_REG_NEW") -> str:
+    """SQL that normalizes a plate column the same way normalize_plate() does:
+    strip whitespace/dashes, uppercase, fold the Cyrillic look-alikes, NULL out
+    the empty and literal-'NULL' values."""
+    return (
+        f"CASE WHEN {column} IS NULL OR TRIM(UPPER({column})) IN ('', 'NULL') THEN NULL "
+        f"ELSE NULLIF(TRANSLATE(UPPER(TRIM(REGEXP_REPLACE({column}, '[\\s\\-]', '', 'g'))), "
+        "'АВЕКМНОРСТХ', 'ABEKMHOPCTX'), '') END"
+    )
+
+
 def detect_date_format(sample: str) -> str | None:
     s = (sample or "").strip()
     for pattern, fmt in _DATE_PATTERNS:
@@ -207,11 +218,7 @@ def register_canonical_view(con: duckdb.DuckDBPyConnection, label: str, year: in
     fmt = detect_date_format(sample[0]) if sample else None
     date_expr = f"TRY_STRPTIME(D_REG, '{fmt}')::DATE" if fmt else "CAST(NULL AS DATE)"
 
-    norm_plate_expr = (
-        "CASE WHEN N_REG_NEW IS NULL OR TRIM(UPPER(N_REG_NEW)) IN ('', 'NULL') THEN NULL "
-        "ELSE NULLIF(TRANSLATE(UPPER(TRIM(REGEXP_REPLACE(N_REG_NEW, '[\\s\\-]', '', 'g'))), "
-        "'АВЕКМНОРСТХ', 'ABEKMHOPCTX'), '') END"
-    )
+    norm_plate_expr = norm_plate_sql()
 
     canon_view = f"canon_{label}"
     con.execute(

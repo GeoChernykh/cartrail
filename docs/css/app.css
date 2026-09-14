@@ -1,0 +1,235 @@
+/* CarTrail UA -- one hand-written stylesheet, no build step.
+   The visual contract is dashboard-style-prompt.md: a flat light-grey field,
+   one rounded slab, a floating icon rail, white cards with a shadow that reads
+   as an edge, and deliberately stripped charts. Six palette values carry the
+   whole design; the single documented exception is the warm end of the
+   net-balance diverging scale, which appears on that one scale and its legend
+   and nowhere else. */
+
+:root {
+  --page: #EDEDEE;
+  --slab: #E4E5E7;
+  --card: #FFFFFF;
+  --blue: #3B6E93;
+  --bluegrey: #A9C0D2;
+  --cyan: #93DCF2;
+  --inert: #E0E0E0;
+  --hi: #2F88F7;
+  --warm: #D97A3A;          /* net outflow only -- see the note above */
+  --pill: #A9BCCB;
+  --ink: #2B2B2B;
+  --muted: #6B6B6B;         /* 5.3:1 on white; never used on --slab */
+  --radius-slab: 40px;
+  --radius-card: 8px;
+  --gap: 20px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, .08);
+  --font: "Segoe UI", Inter, "Source Sans 3", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body { padding: 28px 28px 28px 28px; }
+
+/* ---------------------------------------------------------------- rail --- */
+
+.rail {
+  position: fixed;
+  left: 28px;
+  top: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 5;
+}
+
+.rail button {
+  width: 72px;
+  height: 72px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--blue);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.rail button svg { width: 28px; height: 28px; stroke: currentColor; fill: none;
+  stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+.rail button[aria-current="true"] { background: var(--pill); color: #fff; }
+.rail button:focus-visible,
+.seg button:focus-visible,
+.filters :focus-visible,
+.card :focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+
+/* ---------------------------------------------------------------- slab --- */
+
+.slab {
+  margin-left: 64px;             /* rail buttons sit half on, half off */
+  background: var(--slab);
+  border-radius: var(--radius-slab);
+  padding: 36px 40px 40px;
+  min-height: calc(100vh - 56px);
+}
+
+.slab-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin: 8px 0 20px;
+}
+
+h1 {
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.02;
+  margin: 0;
+}
+
+.sub { color: var(--ink); opacity: .72; margin: 10px 0 0; max-width: 62ch; }
+
+.seg { display: flex; gap: 10px; align-items: center; padding-top: 10px; }
+
+.seg button {
+  border: 0;
+  background: var(--card);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 10px 24px;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.seg button[aria-pressed="true"] { background: var(--pill); color: #1f3342; }
+
+.burger { width: 26px; height: 18px; margin-left: 6px; display: grid;
+  align-content: space-between; }
+.burger i { display: block; height: 4px; border-radius: 2px; background: var(--pill); }
+
+/* ------------------------------------------------------------- filters --- */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  align-items: center;
+  margin-bottom: var(--gap);
+}
+
+.filters label { display: inline-flex; align-items: center; gap: 8px;
+  background: var(--card); border-radius: 999px; padding: 8px 16px;
+  box-shadow: var(--shadow); color: var(--ink); }
+
+.filters select, .filters input[type="search"] {
+  border: 0; background: transparent; font: inherit; color: var(--ink);
+  max-width: 260px;
+}
+.filters input[type="search"] { width: 240px; }
+.filters input[type="range"] { accent-color: var(--blue); width: 130px; }
+.filters .hint { color: var(--ink); opacity: .7; }
+
+/* --------------------------------------------------------------- cards --- */
+
+.row { display: grid; gap: var(--gap); margin-bottom: var(--gap); }
+.row-kpi { grid-template-columns: repeat(4, 1fr); }
+.row-112 { grid-template-columns: 1fr 1fr 2fr; }
+.row-11 { grid-template-columns: 1fr 1fr; }
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  min-width: 0;
+}
+
+.card h2 { font-size: 20px; font-weight: 700; margin: 0 0 4px; text-align: center; }
+.card .win { font-size: 14px; color: var(--muted); text-align: center; margin: 0 0 12px; }
+
+.kpi { display: flex; flex-direction: column; }
+.kpi .label { font-size: 20px; font-weight: 400; text-align: center; margin: 0; }
+.kpi .value { font-size: 56px; font-weight: 600; letter-spacing: -.02em;
+  text-align: center; margin: 6px 0 0; line-height: 1.05; }
+.kpi .note { font-size: 14px; color: var(--muted); text-align: center; margin: 2px 0 0; }
+.kpi .spark { height: 52px; margin-top: 10px; }
+
+.chart { width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; }
+.tall { min-height: 460px; }
+
+/* Cards in the 1 : 1 : 2 row stretch to the tall map/trend card beside them,
+   so their own chart is centred in the leftover height rather than pinned to
+   the top of a mostly empty card. */
+.row-112 .card { display: flex; flex-direction: column; }
+.row-112 .card > .chart { flex: 1; display: flex; flex-direction: column;
+  justify-content: center; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 8px; font-size: 14px;
+  color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+.maplabel { font-size: 14px; color: var(--muted); margin: 0 0 8px; }
+
+table.corridors { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.corridors th { text-align: left; font-weight: 400; color: var(--muted);
+  padding: 4px 8px 8px; }
+table.corridors td { padding: 5px 8px; border-top: 1px solid var(--inert); }
+table.corridors td.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.corridors .bar { background: var(--blue); height: 10px; display: block; }
+.scrolly { max-height: 430px; overflow-y: auto; }
+.scrolly::-webkit-scrollbar { width: 6px; }
+.scrolly::-webkit-scrollbar-thumb { background: var(--inert); border-radius: 3px; }
+
+.tablewrap { overflow-x: auto; }
+
+/* --------------------------------------------------------------- about --- */
+
+.about { background: var(--card); border-radius: var(--radius-card);
+  box-shadow: var(--shadow); padding: 20px 24px; margin-bottom: var(--gap); }
+.about h2 { font-size: 20px; font-weight: 700; margin: 0 0 10px; text-align: left; }
+.about ul { margin: 0; padding-left: 20px; }
+.about li { margin: 6px 0; max-width: 92ch; }
+.about .flag { color: var(--warm); }
+
+.empty { color: var(--muted); text-align: center; padding: 40px 0; }
+
+/* ---------------------------------------------------------- responsive --- */
+
+@media (max-width: 1100px) {
+  body { padding: 16px; }
+  .rail { position: static; flex-direction: row; margin-bottom: 16px; }
+  .rail button { width: 56px; height: 56px; border-radius: 16px; }
+  .slab { margin-left: 0; padding: 20px 16px 24px; border-radius: 24px; }
+  h1 { font-size: 38px; }
+  .kpi .value { font-size: 40px; }
+  .row-kpi { grid-template-columns: repeat(2, 1fr); }
+  .row-112, .row-11 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 30px; }
+  .kpi .value { font-size: 34px; }
+  .kpi .label { font-size: 17px; }
+  .row-kpi { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
