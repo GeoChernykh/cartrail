@@ -1,0 +1,271 @@
+﻿[2026-09-13 20:21:12] === starting download pass ===
+[2026-09-13 20:21:12] GET  reestrTZ2013.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/86a9548b-8323-4fa2-972e-0692edf6959f/download/tz_opendata_z01012013_po31122013.zip
+[2026-09-13 20:21:12]   reestrTZ2013.zip: 1 MB / 93 MB
+[2026-09-13 20:21:13]   reestrTZ2013.zip: 10 MB / 93 MB
+[2026-09-13 20:21:14]   reestrTZ2013.zip: 20 MB / 93 MB
+[2026-09-13 20:21:14]   reestrTZ2013.zip: 30 MB / 93 MB
+[2026-09-13 20:21:15]   reestrTZ2013.zip: 40 MB / 93 MB
+[2026-09-13 20:21:16]   reestrTZ2013.zip: 50 MB / 93 MB
+[2026-09-13 20:21:17]   reestrTZ2013.zip: 60 MB / 93 MB
+[2026-09-13 20:21:18]   reestrTZ2013.zip: 70 MB / 93 MB
+[2026-09-13 20:21:19]   reestrTZ2013.zip: 80 MB / 93 MB
+[2026-09-13 20:21:20]   reestrTZ2013.zip: 90 MB / 93 MB
+[2026-09-13 20:21:20] OK  reestrTZ2013.zip (92.9 MB)
+[2026-09-13 20:21:20] GET  reestrTZ2014.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/80a115ae-61df-4a13-8771-36c2826268df/download/tz_opendata_z01012014_po31122014.zip
+[2026-09-13 20:21:20]   reestrTZ2014.zip: 1 MB / 69 MB
+[2026-09-13 20:21:21]   reestrTZ2014.zip: 10 MB / 69 MB
+[2026-09-13 20:21:22]   reestrTZ2014.zip: 20 MB / 69 MB
+[2026-09-13 20:21:23]   reestrTZ2014.zip: 30 MB / 69 MB
+[2026-09-13 20:21:24]   reestrTZ2014.zip: 40 MB / 69 MB
+[2026-09-13 20:21:25]   reestrTZ2014.zip: 50 MB / 69 MB
+[2026-09-13 20:21:26]   reestrTZ2014.zip: 60 MB / 69 MB
+[2026-09-13 20:21:27] OK  reestrTZ2014.zip (68.9 MB)
+[2026-09-13 20:21:27] GET  reestrTZ2015.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/09c606dc-d740-40db-96f0-e679eeca6ace/download/tz_opendata_z01012015_po31122015.zip
+[2026-09-13 20:21:27]   reestrTZ2015.zip: 1 MB / 59 MB
+[2026-09-13 20:21:28]   reestrTZ2015.zip: 10 MB / 59 MB
+[2026-09-13 20:21:29]   reestrTZ2015.zip: 20 MB / 59 MB
+[2026-09-13 20:21:30]   reestrTZ2015.zip: 30 MB / 59 MB
+[2026-09-13 20:21:31]   reestrTZ2015.zip: 40 MB / 59 MB
+[2026-09-13 20:21:32]   reestrTZ2015.zip: 50 MB / 59 MB
+[2026-09-13 20:21:33] OK  reestrTZ2015.zip (59.4 MB)
+[2026-09-13 20:21:33] GET  reestrTZ2016.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/7bdc2a1b-5399-4ab0-97e0-633e68837b04/download/tz_opendata_z01012016_po31122016.zip
+[2026-09-13 20:21:33]   reestrTZ2016.zip: 1 MB / 57 MB
+[2026-09-13 20:21:34]   reestrTZ2016.zip: 10 MB / 57 MB
+[2026-09-13 20:21:35]   reestrTZ2016.zip: 20 MB / 57 MB
+[2026-09-13 20:21:36]   reestrTZ2016.zip: 30 MB / 57 MB
+[2026-09-13 20:21:37]   reestrTZ2016.zip: 40 MB / 57 MB
+[2026-09-13 20:21:38]   reestrTZ2016.zip: 50 MB / 57 MB
+[2026-09-13 20:21:39] OK  reestrTZ2016.zip (56.6 MB)
+[2026-09-13 20:21:39] GET  reestrTZ2017.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/9ce32352-bd11-4324-a2b4-5addbd228b1b/download/tz_opendata_z01012017_po31122017.zip
+[2026-09-13 20:21:39]   reestrTZ2017.zip: 1 MB / 56 MB
+[2026-09-13 20:21:40]   reestrTZ2017.zip: 10 MB / 56 MB
+[2026-09-13 20:21:41]   reestrTZ2017.zip: 20 MB / 56 MB
+[2026-09-13 20:21:42]   reestrTZ2017.zip: 30 MB / 56 MB
+[2026-09-13 20:21:43]   reestrTZ2017.zip: 40 MB / 56 MB
+[2026-09-13 20:21:44]   reestrTZ2017.zip: 50 MB / 56 MB
+[2026-09-13 20:21:44] OK  reestrTZ2017.zip (56.2 MB)
+[2026-09-13 20:21:44] GET  reestrTZ2018.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/01323740-88df-46c2-b06e-fbb58c89fe17/download/tz_opendata_z01012018_po01012019.zip
+[2026-09-13 20:21:45]   reestrTZ2018.zip: 1 MB / 63 MB
+[2026-09-13 20:21:46]   reestrTZ2018.zip: 10 MB / 63 MB
+[2026-09-13 20:21:47]   reestrTZ2018.zip: 20 MB / 63 MB
+[2026-09-13 20:21:48]   reestrTZ2018.zip: 30 MB / 63 MB
+[2026-09-13 20:21:49]   reestrTZ2018.zip: 40 MB / 63 MB
+[2026-09-13 20:21:50]   reestrTZ2018.zip: 50 MB / 63 MB
+[2026-09-13 20:21:51]   reestrTZ2018.zip: 60 MB / 63 MB
+[2026-09-13 20:21:51] OK  reestrTZ2018.zip (62.8 MB)
+[2026-09-13 20:21:51] GET  reestrTZ2019.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/7a58e8f7-9323-47d4-a21d-19486e014eb4/download/tz_opendata_z01012019_po01012020.zip
+[2026-09-13 20:21:51]   reestrTZ2019.zip: 1 MB / 83 MB
+[2026-09-13 20:21:52]   reestrTZ2019.zip: 10 MB / 83 MB
+[2026-09-13 20:21:53]   reestrTZ2019.zip: 20 MB / 83 MB
+[2026-09-13 20:21:54]   reestrTZ2019.zip: 30 MB / 83 MB
+[2026-09-13 20:21:55]   reestrTZ2019.zip: 40 MB / 83 MB
+[2026-09-13 20:21:56]   reestrTZ2019.zip: 50 MB / 83 MB
+[2026-09-13 20:21:57]   reestrTZ2019.zip: 60 MB / 83 MB
+[2026-09-13 20:21:59]   reestrTZ2019.zip: 70 MB / 83 MB
+[2026-09-13 20:22:00]   reestrTZ2019.zip: 80 MB / 83 MB
+[2026-09-13 20:22:00] OK  reestrTZ2019.zip (82.8 MB)
+[2026-09-13 20:22:00] GET  reestrTZ2020.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/ebeb92fe-424c-41d1-aacf-288e91049dc9/download/tz_opendata_z01012020_po01012021.zip
+[2026-09-13 20:22:00]   reestrTZ2020.zip: 1 MB / 67 MB
+[2026-09-13 20:22:01]   reestrTZ2020.zip: 10 MB / 67 MB
+[2026-09-13 20:22:02]   reestrTZ2020.zip: 20 MB / 67 MB
+[2026-09-13 20:22:03]   reestrTZ2020.zip: 30 MB / 67 MB
+[2026-09-13 20:22:04]   reestrTZ2020.zip: 40 MB / 67 MB
+[2026-09-13 20:22:05]   reestrTZ2020.zip: 50 MB / 67 MB
+[2026-09-13 20:22:06]   reestrTZ2020.zip: 60 MB / 67 MB
+[2026-09-13 20:22:07] OK  reestrTZ2020.zip (67.2 MB)
+[2026-09-13 20:22:07] GET  reestrTZ2021.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/c5cb530d-0533-40be-b9ad-f03e06c94b10/download/tz_opendata_z01012021_po01012022.zip
+[2026-09-13 20:22:07]   reestrTZ2021.zip: 1 MB / 99 MB
+[2026-09-13 20:22:08]   reestrTZ2021.zip: 10 MB / 99 MB
+[2026-09-13 20:22:09]   reestrTZ2021.zip: 20 MB / 99 MB
+[2026-09-13 20:22:10]   reestrTZ2021.zip: 30 MB / 99 MB
+[2026-09-13 20:22:11]   reestrTZ2021.zip: 40 MB / 99 MB
+[2026-09-13 20:22:12]   reestrTZ2021.zip: 50 MB / 99 MB
+[2026-09-13 20:22:13]   reestrTZ2021.zip: 60 MB / 99 MB
+[2026-09-13 20:22:14]   reestrTZ2021.zip: 70 MB / 99 MB
+[2026-09-13 20:22:15]   reestrTZ2021.zip: 80 MB / 99 MB
+[2026-09-13 20:22:16]   reestrTZ2021.zip: 90 MB / 99 MB
+[2026-09-13 20:22:17] OK  reestrTZ2021.zip (99.5 MB)
+[2026-09-13 20:22:17] GET  reestrTZ2022_part1.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/bef7b47b-7963-44b5-88a8-f84241137b5b/download/reestrtz2022.zip
+[2026-09-13 20:22:17]   reestrTZ2022_part1.zip: 1 MB / 12 MB
+[2026-09-13 20:22:17]   reestrTZ2022_part1.zip: 10 MB / 12 MB
+[2026-09-13 20:22:18] OK  reestrTZ2022_part1.zip (12.4 MB)
+[2026-09-13 20:22:18] GET  reestrTZ2022_part2.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/fb6d9eb4-875e-45c9-be51-d49b6875b9eb/download/reestrtz2022.zip
+[2026-09-13 20:22:18]   reestrTZ2022_part2.zip: 1 MB / 20 MB
+[2026-09-13 20:22:19]   reestrTZ2022_part2.zip: 10 MB / 20 MB
+[2026-09-13 20:22:20]   reestrTZ2022_part2.zip: 20 MB / 20 MB
+[2026-09-13 20:22:20] OK  reestrTZ2022_part2.zip (20.2 MB)
+[2026-09-13 20:22:20] GET  reestrTZ2022_part3.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/b1bcb4a9-8e60-4a1c-91c0-00faae008816/download/reestrtz2022.zip
+[2026-09-13 20:22:20]   reestrTZ2022_part3.zip: 1 MB / 86 MB
+[2026-09-13 20:22:21]   reestrTZ2022_part3.zip: 10 MB / 86 MB
+[2026-09-13 20:22:21]   reestrTZ2022_part3.zip: 20 MB / 86 MB
+[2026-09-13 20:22:22]   reestrTZ2022_part3.zip: 30 MB / 86 MB
+[2026-09-13 20:22:23]   reestrTZ2022_part3.zip: 40 MB / 86 MB
+[2026-09-13 20:22:24]   reestrTZ2022_part3.zip: 50 MB / 86 MB
+[2026-09-13 20:22:25]   reestrTZ2022_part3.zip: 60 MB / 86 MB
+[2026-09-13 20:22:26]   reestrTZ2022_part3.zip: 70 MB / 86 MB
+[2026-09-13 20:22:27]   reestrTZ2022_part3.zip: 80 MB / 86 MB
+[2026-09-13 20:22:27] OK  reestrTZ2022_part3.zip (86.2 MB)
+[2026-09-13 20:22:27] GET  reestrTZ2023.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/c3a12388-55c2-4546-8b71-b4b7ff0d8b16/download/reestrtz2023.zip
+[2026-09-13 20:22:28]   reestrTZ2023.zip: 1 MB / 106 MB
+[2026-09-13 20:22:28]   reestrTZ2023.zip: 10 MB / 106 MB
+[2026-09-13 20:22:29]   reestrTZ2023.zip: 20 MB / 106 MB
+[2026-09-13 20:22:30]   reestrTZ2023.zip: 30 MB / 106 MB
+[2026-09-13 20:22:31]   reestrTZ2023.zip: 40 MB / 106 MB
+[2026-09-13 20:22:32]   reestrTZ2023.zip: 50 MB / 106 MB
+[2026-09-13 20:22:33]   reestrTZ2023.zip: 60 MB / 106 MB
+[2026-09-13 20:22:35]   reestrTZ2023.zip: 70 MB / 106 MB
+[2026-09-13 20:22:35]   reestrTZ2023.zip: 80 MB / 106 MB
+[2026-09-13 20:22:36]   reestrTZ2023.zip: 90 MB / 106 MB
+[2026-09-13 20:22:37]   reestrTZ2023.zip: 100 MB / 106 MB
+[2026-09-13 20:22:38] OK  reestrTZ2023.zip (105.8 MB)
+[2026-09-13 20:22:38] GET  reestrTZ2024.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/c3ffecc4-bb5c-4102-b761-6dcfeb60b4fe/download/reestrtz2024.zip
+[2026-09-13 20:22:38]   reestrTZ2024.zip: 1 MB / 107 MB
+[2026-09-13 20:22:39]   reestrTZ2024.zip: 10 MB / 107 MB
+[2026-09-13 20:22:40]   reestrTZ2024.zip: 20 MB / 107 MB
+[2026-09-13 20:22:41]   reestrTZ2024.zip: 30 MB / 107 MB
+[2026-09-13 20:22:41]   reestrTZ2024.zip: 40 MB / 107 MB
+[2026-09-13 20:22:42]   reestrTZ2024.zip: 50 MB / 107 MB
+[2026-09-13 20:22:43]   reestrTZ2024.zip: 60 MB / 107 MB
+[2026-09-13 20:22:44]   reestrTZ2024.zip: 70 MB / 107 MB
+[2026-09-13 20:22:45]   reestrTZ2024.zip: 80 MB / 107 MB
+[2026-09-13 20:22:46]   reestrTZ2024.zip: 90 MB / 107 MB
+[2026-09-13 20:22:47]   reestrTZ2024.zip: 100 MB / 107 MB
+[2026-09-13 20:22:48] OK  reestrTZ2024.zip (107.0 MB)
+[2026-09-13 20:22:48] GET  reestrTZ2025.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/b7e72d22-55f5-4545-87dc-94e6c8ee03ef/download/reestrtz2025.zip
+[2026-09-13 20:22:48]   reestrTZ2025.zip: 1 MB / 109 MB
+[2026-09-13 20:22:49]   reestrTZ2025.zip: 10 MB / 109 MB
+[2026-09-13 20:22:50]   reestrTZ2025.zip: 20 MB / 109 MB
+[2026-09-13 20:22:51]   reestrTZ2025.zip: 30 MB / 109 MB
+[2026-09-13 20:22:52]   reestrTZ2025.zip: 40 MB / 109 MB
+[2026-09-13 20:22:52]   reestrTZ2025.zip: 50 MB / 109 MB
+[2026-09-13 20:22:53]   reestrTZ2025.zip: 60 MB / 109 MB
+[2026-09-13 20:22:54]   reestrTZ2025.zip: 70 MB / 109 MB
+[2026-09-13 20:22:55]   reestrTZ2025.zip: 80 MB / 109 MB
+[2026-09-13 20:22:56]   reestrTZ2025.zip: 90 MB / 109 MB
+[2026-09-13 20:22:57]   reestrTZ2025.zip: 100 MB / 109 MB
+[2026-09-13 20:22:58] OK  reestrTZ2025.zip (108.5 MB)
+[2026-09-13 20:22:58] GET  reestrTZ2026.zip <- https://data.gov.ua/dataset/0ffd8b75-0628-48cc-952a-9302f9799ec0/resource/3f13166f-090b-499e-8e23-e9851c5a5f67/download/reestrtz2026.zip
+[2026-09-13 20:22:58]   reestrTZ2026.zip: 1 MB / 47 MB
+[2026-09-13 20:22:59]   reestrTZ2026.zip: 10 MB / 47 MB
+[2026-09-13 20:23:00]   reestrTZ2026.zip: 20 MB / 47 MB
+[2026-09-13 20:23:01]   reestrTZ2026.zip: 30 MB / 47 MB
+[2026-09-13 20:23:02]   reestrTZ2026.zip: 40 MB / 47 MB
+[2026-09-13 20:23:03] OK  reestrTZ2026.zip (46.9 MB)
+[2026-09-13 20:23:03] === download pass complete ===
+[2026-09-13 20:23:03] all files present and valid
+[2026-09-13 20:23:03] === building inventory report ===
+
+| File | Size on disk | CSVs inside | Largest CSV rows | Largest CSV header |
+|---|---|---|---|---|
+| reestrTZ2013.zip | 92.9 MB | tz_opendata_z01012013_po31122013.csv | 1935496 | `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new` |
+| reestrTZ2014.zip | 68.9 MB | tz_opendata_z01012014_po31122014.csv | 1439551 | `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new` |
+| reestrTZ2015.zip | 59.4 MB | tz_opendata_z01012015_po31122015.csv | 1296256 | `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new` |
+| reestrTZ2016.zip | 56.6 MB | tz_opendata_z01012016_po31122016.csv | 1432560 | `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new` |
+| reestrTZ2017.zip | 56.2 MB | tz_opendata_z01012017_po31122017.csv | 1417655 | `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new` |
+| reestrTZ2018.zip | 62.8 MB | tz_opendata_z01012018_po01012019.csv | 1547418 | `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new` |
+| reestrTZ2019.zip | 82.8 MB | (no CSV found) | - | `-` |
+| reestrTZ2020.zip | 67.2 MB | tz_opendata_z01012020_po01012021.csv | 1771329 | `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"` |
+| reestrTZ2021.zip | 99.5 MB | tz_opendata_z01012021_po01012022.csv | 2201307 | `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"` |
+| reestrTZ2022_part1.zip | 12.4 MB | tz_opendata_z01012022_po01032022.csv | 270775 | `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"` |
+| reestrTZ2022_part2.zip | 20.2 MB | reestrTZ2022.csv | 443599 | `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"` |
+| reestrTZ2022_part3.zip | 86.2 MB | tz_opendata_z01012022_po01012023.csv | 1745908 | `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"` |
+| reestrTZ2023.zip | 105.8 MB | tz_opendata_z01012023_po01012024.csv | 2124732 | `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"` |
+| reestrTZ2024.zip | 107.0 MB | tz_opendata_z01012024_po01012025.csv | 2344544 | `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"` |
+| reestrTZ2025.zip | 108.5 MB | reestrtz31.12.2025.csv | 2229904 | `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"` |
+| reestrTZ2026.zip | 46.9 MB | reestrtz31.08.2026.csv | 1221092 | `"PERSON";"CD.OPER_CODE||'-'||CD.OPERAS";"D_REG";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"PURPOSE";"BODY";"FUEL";"CAPACITY";"POWER_KWT";"OWN_WEIGHT";"TOTAL_WEIGHT"` |
+
+### reestrTZ2013.zip
+- size on disk: 92.9 MB
+- entries: tz_opendata_z01012013_po31122013.csv
+- largest CSV: tz_opendata_z01012013_po31122013.csv (1935496 data rows)
+- header: `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new`
+
+### reestrTZ2014.zip
+- size on disk: 68.9 MB
+- entries: tz_opendata_z01012014_po31122014.csv
+- largest CSV: tz_opendata_z01012014_po31122014.csv (1439551 data rows)
+- header: `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new`
+
+### reestrTZ2015.zip
+- size on disk: 59.4 MB
+- entries: tz_opendata_z01012015_po31122015.csv
+- largest CSV: tz_opendata_z01012015_po31122015.csv (1296256 data rows)
+- header: `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new`
+
+### reestrTZ2016.zip
+- size on disk: 56.6 MB
+- entries: tz_opendata_z01012016_po31122016.csv
+- largest CSV: tz_opendata_z01012016_po31122016.csv (1432560 data rows)
+- header: `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new`
+
+### reestrTZ2017.zip
+- size on disk: 56.2 MB
+- entries: tz_opendata_z01012017_po31122017.csv
+- largest CSV: tz_opendata_z01012017_po31122017.csv (1417655 data rows)
+- header: `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new`
+
+### reestrTZ2018.zip
+- size on disk: 62.8 MB
+- entries: tz_opendata_z01012018_po01012019.csv
+- largest CSV: tz_opendata_z01012018_po01012019.csv (1547418 data rows)
+- header: `person;reg_addr_koatuu;oper_code;oper_name;d_reg;dep_code;dep;brand;model;make_year;color;kind;body;purpose;fuel;capacity;own_weight;total_weight;n_reg_new`
+
+### reestrTZ2019.zip
+- size on disk: 82.8 MB
+- entries: tz_opendata_z01012019_po01012020.бsv
+
+### reestrTZ2020.zip
+- size on disk: 67.2 MB
+- entries: tz_opendata_z01012020_po01012021.csv
+- largest CSV: tz_opendata_z01012020_po01012021.csv (1771329 data rows)
+- header: `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"`
+
+### reestrTZ2021.zip
+- size on disk: 99.5 MB
+- entries: tz_opendata_z01012021_po01012022.csv
+- largest CSV: tz_opendata_z01012021_po01012022.csv (2201307 data rows)
+- header: `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"`
+
+### reestrTZ2022_part1.zip
+- size on disk: 12.4 MB
+- entries: tz_opendata_z01012022_po01032022.csv
+- largest CSV: tz_opendata_z01012022_po01032022.csv (270775 data rows)
+- header: `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"`
+
+### reestrTZ2022_part2.zip
+- size on disk: 20.2 MB
+- entries: reestrTZ2022.csv
+- largest CSV: reestrTZ2022.csv (443599 data rows)
+- header: `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"`
+
+### reestrTZ2022_part3.zip
+- size on disk: 86.2 MB
+- entries: tz_opendata_z01012022_po01012023.csv
+- largest CSV: tz_opendata_z01012022_po01012023.csv (1745908 data rows)
+- header: `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"`
+
+### reestrTZ2023.zip
+- size on disk: 105.8 MB
+- entries: tz_opendata_z01012023_po01012024.csv
+- largest CSV: tz_opendata_z01012023_po01012024.csv (2124732 data rows)
+- header: `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"`
+
+### reestrTZ2024.zip
+- size on disk: 107.0 MB
+- entries: tz_opendata_z01012024_po01012025.csv
+- largest CSV: tz_opendata_z01012024_po01012025.csv (2344544 data rows)
+- header: `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"`
+
+### reestrTZ2025.zip
+- size on disk: 108.5 MB
+- entries: reestrtz31.12.2025.csv
+- largest CSV: reestrtz31.12.2025.csv (2229904 data rows)
+- header: `"PERSON";"REG_ADDR_KOATUU";"OPER_CODE";"OPER_NAME";"D_REG";"DEP_CODE";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"BODY";"PURPOSE";"FUEL";"CAPACITY";"OWN_WEIGHT";"TOTAL_WEIGHT";"N_REG_NEW"`
+
+### reestrTZ2026.zip
+- size on disk: 46.9 MB
+- entries: reestrtz31.08.2026.csv
+- largest CSV: reestrtz31.08.2026.csv (1221092 data rows)
+- header: `"PERSON";"CD.OPER_CODE||'-'||CD.OPERAS";"D_REG";"DEP";"BRAND";"MODEL";"VIN";"MAKE_YEAR";"COLOR";"KIND";"PURPOSE";"BODY";"FUEL";"CAPACITY";"POWER_KWT";"OWN_WEIGHT";"TOTAL_WEIGHT"`
+
+[2026-09-13 20:23:16] report written to C:\PythonProjects\CSS\data\Ukraine Car Registration\_inventory.md

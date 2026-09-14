@@ -1,0 +1,10 @@
+.venv/
+.claude/
+_scratch/
+build/
+data/*.zip
+data/merged_registrations.csv
+data/*.parquet
+data/*.csv
+__pycache__/
+*.pyc
