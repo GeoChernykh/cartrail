@@ -44,6 +44,9 @@ export function controls(state, meta) {
   const fuelOpts = meta.dict.fuel_groups
     .map((g, i) => ({ v: String(i), t: g }));
   const ageOpts = meta.dict.age_bands.map((g, i) => ({ v: String(i), t: g }));
+  // When the build drops the fuel dimension from the cube there is nothing to
+  // filter on, so the control goes away rather than sitting there inert.
+  const withFuel = meta.migration.fuel_dim !== false;
   return [
     { key: 'dir', label: 'Показник', options: [
       { v: 'net', t: 'Баланс (приплив − відтік)' },
@@ -53,7 +56,8 @@ export function controls(state, meta) {
       { v: 'all', t: 'Усі' },
       { v: '0', t: meta.dict.owner_labels.P },
       { v: '1', t: meta.dict.owner_labels.J }] },
-    { key: 'fuel', label: 'Пальне', options: [{ v: 'all', t: 'Усе' }, ...fuelOpts] },
+    ...(withFuel ? [{ key: 'fuel', label: 'Пальне',
+      options: [{ v: 'all', t: 'Усе' }, ...fuelOpts] }] : []),
     { key: 'age', label: 'Вік авто', options: [{ v: 'all', t: 'Будь-який' }, ...ageOpts] },
     { key: 'minv', label: 'Мін. коридор', type: 'range',
       min: 0, max: 2000, step: 50, suffix: ' авто' },
@@ -72,7 +76,10 @@ function aggregate(cubes, state, N) {
     matrix: Array.from({ length: N }, () => zeros(N)),
     corr: new Map(),
     dh: zeros(8), age: zeros(6),
-    total: 0, diag: 0, perYear: [], hasDh: true, hasFuel: true,
+    // `total` counts every pair in scope; `origin` counts only pairs that START
+    // in the pivoted oblast. Retention is defined on origin, so when an oblast
+    // is pivoted its inbound traffic must not dilute the denominator.
+    total: 0, origin: 0, diag: 0, perYear: [], hasDh: true, hasFuel: true,
   };
   const ob = state.ob === '' ? null : Number(state.ob);
   const own = state.own === 'all' ? null : Number(state.own);
@@ -84,7 +91,8 @@ function aggregate(cubes, state, N) {
     const withDh = hasDaysHist(cube);
     agg.hasDh &&= withDh;
     agg.hasFuel &&= withFuel;
-    const y = { year: cube.year, total: 0, diag: 0, dh: zeros(8), age: zeros(6) };
+    const y = { year: cube.year, total: 0, origin: 0, diag: 0,
+      dh: zeros(8), age: zeros(6) };
     for (let i = 0; i < cube.n.length; i++) {
       if (own !== null && cube.own[i] !== own) continue;
       if (fuel !== null && withFuel && cube.fuel[i] !== fuel) continue;
@@ -97,6 +105,7 @@ function aggregate(cubes, state, N) {
       agg.matrix[a][b] += v;
       agg.total += v; y.total += v;
       agg.age[ab] += v; y.age[ab] += v;
+      if (ob === null || a === ob) { agg.origin += v; y.origin += v; }
       if (a === b) { agg.diag += v; y.diag += v; }
       const key = a * N + b;
       let c = agg.corr.get(key);
@@ -125,31 +134,83 @@ function balances(agg, N) {
   return { inflow, outflow, net: inflow.map((v, i) => v - outflow[i]) };
 }
 
+/** Median of values weighted by count: used to pool the exact per-corridor
+ *  medians when the cube shipped without its days histogram. */
+function weightedMedian(entries) {
+  const rows = entries.filter((e) => e.v != null && e.w > 0)
+    .sort((a, b) => a.v - b.v);
+  const total = rows.reduce((s, e) => s + e.w, 0);
+  if (!total) return null;
+  let cum = 0;
+  for (const e of rows) {
+    cum += e.w;
+    if (cum >= total / 2) return e.v;
+  }
+  return rows[rows.length - 1].v;
+}
+
+/** Fallback for the overflow branch: build a (from, to) -> {n, median} lookup
+ *  from the exact median table for the selected years. The table is keyed
+ *  (from, to, move_year) only, so it cannot answer the owner or fuel filters --
+ *  every tile that reads it is labelled «усі типи власників, усе пальне». */
+function medianLookup(state, N) {
+  if (!medians) return null;
+  const yrs = new Set(yearsOf(state));
+  const ob = state.ob === '' ? null : Number(state.ob);
+  const out = new Map();
+  for (let i = 0; i < medians.n.length; i++) {
+    if (!yrs.has(medians.year[i])) continue;
+    const a = medians.from[i];
+    const b = medians.to[i];
+    if (ob !== null && a !== ob && b !== ob) continue;
+    const key = a * N + b;
+    let cell = out.get(key);
+    if (!cell) { cell = { parts: [] }; out.set(key, cell); }
+    cell.parts.push({ v: medians.median_days[i], w: medians.n[i] });
+  }
+  for (const cell of out.values()) cell.median = weightedMedian(cell.parts);
+  return out;
+}
+
 function kpis(el, agg, meta, state) {
   const dEdges = meta.dict.days_bin_edges;
   const aEdges = meta.dict.age_band_edges;
   const moves = agg.total - agg.diag;
   const estimate = 'медіана (оцінка за інтервалами)';
-  const medDays = agg.hasDh ? bandMedian(agg.dh, dEdges) : corridorMedianFallback(state);
+  // Fallback path: the national per-year histograms in meta, band-interpolated
+  // exactly as the cube's own histogram would be. They ignore every filter, so
+  // the tile says which ones.
+  const national = meta.migration.days_hist_by_year || {};
+  const pooled = yearsOf(state)
+    .map((y) => national[String(y)])
+    .filter(Boolean)
+    .reduce((acc, h) => (acc ? acc.map((v, i) => v + h[i]) : h.slice()), null);
+  const medDays = agg.hasDh
+    ? bandMedian(agg.dh, dEdges)
+    : (pooled ? bandMedian(pooled, dEdges) : null);
   const medAge = bandMedian(agg.age.slice(0, aEdges.length), aEdges);
   const cards = [
     kpiCard({
       label: 'Міжобласних переїздів',
       value: compact(moves),
-      note: `${num(agg.total)} пар подій, з них ${pct(share(agg.diag, agg.total))} у своїй області`,
+      note: `${num(agg.origin)} пар подій${state.ob === '' ? '' : ' із цієї області'}`
+        + `, з них ${pct(share(agg.diag, agg.origin))} у своїй області`,
       spark: agg.perYear.map((y) => y.total - y.diag),
     }),
     kpiCard({
       label: 'Лишились у своїй області',
-      value: pct(share(agg.diag, agg.total)),
+      value: pct(share(agg.diag, agg.origin)),
       note: 'частка других подій у тій самій області',
-      spark: agg.perYear.map((y) => share(y.diag, y.total)),
+      spark: agg.perYear.map((y) => share(y.diag, y.origin)),
     }),
     kpiCard({
       label: 'Днів до наступної події',
       value: medDays == null ? '—' : num(Math.round(medDays)),
-      note: estimate,
-      spark: agg.perYear.map((y) => bandMedian(y.dh, dEdges)),
+      note: agg.hasDh ? estimate
+        : 'уся Україна, усі типи власників, усе пальне',
+      spark: agg.hasDh
+        ? agg.perYear.map((y) => bandMedian(y.dh, dEdges))
+        : yearsOf(state).map((y) => bandMedian(national[String(y)] || [], dEdges)),
     }),
     kpiCard({
       label: 'Вік авто на момент переїзду',
@@ -159,14 +220,6 @@ function kpis(el, agg, meta, state) {
     }),
   ];
   el.replaceChildren(...cards);
-}
-
-function corridorMedianFallback() {
-  // The cube shipped without its days histogram, so medians come from the exact
-  // table instead. It is keyed (from, to, year) only, so it cannot respond to
-  // the owner or fuel filters -- the tiles say so.
-  if (!medians) return null;
-  return null;
 }
 
 function drawMap(el, agg, meta, state, onPick) {
@@ -314,7 +367,8 @@ function drawChord(el, agg, meta) {
   void N;
 }
 
-function drawCorridors(el, agg, meta, state) {
+function drawCorridors(el, agg, meta, state, fallback) {
+  const N = meta.dict.oblasts.length;
   const minv = Number(state.minv) || 0;
   const rows = [...agg.corr.values()]
     .filter((c) => c.a !== c.b && c.n >= minv)
@@ -328,7 +382,9 @@ function drawCorridors(el, agg, meta, state) {
   const dEdges = meta.dict.days_bin_edges;
   const aEdges = meta.dict.age_band_edges;
   const body = rows.map((c) => {
-    const md = agg.hasDh ? bandMedian(c.dh, dEdges) : null;
+    const md = agg.hasDh
+      ? bandMedian(c.dh, dEdges)
+      : fallback?.get(c.a * N + c.b)?.median ?? null;
     const ma = bandMedian(c.age.slice(0, aEdges.length), aEdges);
     return `<tr>
       <td>${meta.dict.oblasts[c.a].name} → ${meta.dict.oblasts[c.b].name}</td>
@@ -354,6 +410,7 @@ export async function render(root, meta, state, setState) {
   const N = meta.dict.oblasts.length;
   const agg = aggregate(cubes, state, N);
   const { inflow, outflow } = balances(agg, N);
+  const fallback = agg.hasDh ? null : medianLookup(state, N);
 
   kpis(root.querySelector('#map-kpis'), agg, meta, state);
 
@@ -377,7 +434,7 @@ export async function render(root, meta, state, setState) {
   note.textContent = agg.hasDh
     ? 'Медіана днів і віку — оцінка за інтервалами'
     : 'Медіани з окремої таблиці: усі типи власників, усе пальне';
-  drawCorridors(root.querySelector('#c-corridors'), agg, meta, state);
+  drawCorridors(root.querySelector('#c-corridors'), agg, meta, state, fallback);
 
   const picked = state.ob === '' ? null : meta.dict.oblasts[Number(state.ob)];
   return picked

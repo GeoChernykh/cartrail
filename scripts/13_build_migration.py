@@ -167,24 +167,43 @@ def build_moves(con: duckdb.DuckDBPyConnection, say) -> dict:
     if nulls:
         dims.fail(f"{nulls:,} pairs have a NULL owner type; PERSON is never null in this data")
 
-    say("\n| move_year | pairs | retention |")
-    say("|---|---|---|")
+    say("\n| move_year | pairs | retention | median days |")
+    say("|---|---|---|---|")
     by_year = con.execute("""
-        SELECT move_year, COUNT(*), 100.0 * SUM(CASE WHEN from_ob = to_ob THEN 1 ELSE 0 END) / COUNT(*)
+        SELECT move_year, COUNT(*),
+               100.0 * SUM(CASE WHEN from_ob = to_ob THEN 1 ELSE 0 END) / COUNT(*),
+               MEDIAN(dgap)
         FROM mv GROUP BY 1 ORDER BY 1
     """).fetchall()
-    for y, c, r in by_year:
-        say(f"| {y} | {c:,} | {r:.2f}% |")
+    for y, c, r, m in by_year:
+        say(f"| {y} | {c:,} | {r:.2f}% | {m:,.0f} |")
+
+    # National days histogram per year, on the same 8 bins as the cube. When the
+    # overflow ladder drops the per-cell histogram the UI still needs a days
+    # median it can compute exactly the same way for any selection of years;
+    # pooling per-corridor medians instead would bias the figure upward.
+    hist_cases = ",\n".join(
+        f"  COUNT(*) FILTER (WHERE dgap BETWEEN {lo} AND {hi})"
+        for lo, hi in dims.DAYS_BIN_EDGES[:-1])
+    hist = con.execute(f"""
+        SELECT move_year,
+{hist_cases},
+          COUNT(*) FILTER (WHERE dgap >= {dims.DAYS_BIN_EDGES[-1][0]})
+        FROM mv GROUP BY 1 ORDER BY 1
+    """).fetchall()
     return {"pairs": n, "retention_pct": round(100 * diag / n, 2),
             "median_days_exact": int(med),
-            "by_year": {str(y): {"pairs": c, "retention_pct": round(r, 2)}
-                        for y, c, r in by_year}}
+            "by_year": {str(y): {"pairs": c, "retention_pct": round(r, 2),
+                                 "median_days": int(m)} for y, c, r, m in by_year},
+            "days_hist_by_year": {str(row[0]): list(row[1:]) for row in hist}}
 
 
 def write_cube(con: duckdb.DuckDBPyConnection, say) -> dict:
-    raw_cells = con.execute("""
-        SELECT COUNT(*) FROM (SELECT from_ob, to_ob, move_year, person, fg, ageb
-                              FROM mv GROUP BY ALL)
+    fuel_dim = dims.CUBE_FUEL_DIM
+    group_fg = "fg" if fuel_dim else "NULL AS fg"
+    raw_cells = con.execute(f"""
+        SELECT COUNT(*) FROM (SELECT from_ob, to_ob, move_year, person,
+                              {group_fg}, ageb FROM mv GROUP BY ALL)
     """).fetchone()[0]
     dh_cases = ",\n".join(
         f"  COUNT(*) FILTER (WHERE dgap BETWEEN {lo} AND {hi}) AS d{i}"
@@ -192,12 +211,12 @@ def write_cube(con: duckdb.DuckDBPyConnection, say) -> dict:
     )
     last_lo = dims.DAYS_BIN_EDGES[-1][0]
     cells = con.execute(f"""
-        SELECT from_ob, to_ob, move_year, person, fg, ageb, COUNT(*) AS n,
+        SELECT from_ob, to_ob, move_year, person, {group_fg}, ageb, COUNT(*) AS n,
 {dh_cases},
           COUNT(*) FILTER (WHERE dgap >= {last_lo}) AS d{len(dims.DAYS_BIN_EDGES) - 1}
         FROM mv GROUP BY 1, 2, 3, 4, 5, 6
         HAVING COUNT(*) >= {dims.MIN_CELL}
-        ORDER BY move_year, from_ob, to_ob, person, fg, ageb
+        ORDER BY move_year, from_ob, to_ob, person, 5, ageb
     """).fetchall()
     kept = len(cells)
     kept_rows = sum(c[6] for c in cells)
@@ -209,6 +228,7 @@ def write_cube(con: duckdb.DuckDBPyConnection, say) -> dict:
         f"({100 * (total_rows - kept_rows) / total_rows:.2f}%)")
 
     ship_dh = kept <= dims.CUBE_CELL_LIMIT
+    say(f"- fuel dimension shipped with the cube: **{'yes' if fuel_dim else 'no'}**")
     say(f"- days histogram shipped with the cube: **{'yes' if ship_dh else 'no'}**")
 
     oi = dims.OBLAST_INDEX
@@ -226,7 +246,8 @@ def write_cube(con: duckdb.DuckDBPyConnection, say) -> dict:
         d["from"].append(oi[from_ob])
         d["to"].append(oi[to_ob])
         d["own"].append(owner_i[person])
-        d["fuel"].append(fi.get(fg, unknown_fuel) if fg else unknown_fuel)
+        if fuel_dim:
+            d["fuel"].append(fi.get(fg, unknown_fuel) if fg else unknown_fuel)
         d["ageb"].append(ageb)
         d["n"].append(n)
         if ship_dh:
@@ -236,6 +257,8 @@ def write_cube(con: duckdb.DuckDBPyConnection, say) -> dict:
     for year, d in per_year.items():
         if not ship_dh:
             d.pop("dh")
+        if not fuel_dim:
+            d.pop("fuel")
         payload = {"year": year, **d}
         path = OUT_DIR / f"flows_{year}.json"
         path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
@@ -251,6 +274,7 @@ def write_cube(con: duckdb.DuckDBPyConnection, say) -> dict:
         "pairs_suppressed": total_rows - kept_rows,
         "pairs_suppressed_pct": round(100 * (total_rows - kept_rows) / total_rows, 3),
         "days_hist": ship_dh,
+        "fuel_dim": fuel_dim,
         "bytes": sizes,
     }
 

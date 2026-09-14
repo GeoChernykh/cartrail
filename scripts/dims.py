@@ -172,6 +172,12 @@ OWNER_LABELS = {"P": "Фізична особа", "J": "Юридична осо�
 
 MIN_CELL = 3           # build-time suppression floor per cube cell
 CUBE_CELL_LIMIT = 60_000   # above this, drop days_hist (see PLAN.md Phase 4)
+# Size-budget ladder, in order: raise MODEL_MIN_ROWS, then set this to False to
+# drop the fuel dimension from the cube, then let CUBE_CELL_LIMIT drop the days
+# histogram. Both are build-config flips -- the front-end feature-detects the
+# `fuel` and `dh` arrays and adjusts its controls and its medians accordingly,
+# so neither ever needs a front-end edit.
+CUBE_FUEL_DIM = True
 MODEL_MIN_ROWS = 500       # model inclusion threshold, 2013-2026
 
 # --------------------------------------------------------------------------

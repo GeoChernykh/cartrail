@@ -16,6 +16,7 @@ let meta = null;
 let current = 'map';
 let aboutOpen = false;
 let rendering = false;
+let queued = false;
 
 const el = (id) => document.getElementById(id);
 
@@ -184,7 +185,9 @@ function setScreen(next) {
 }
 
 async function draw(push = false) {
-  if (rendering) return;
+  // Latest wins. Dropping a change that arrives mid-fetch would leave the
+  // screen showing something other than what the URL says.
+  if (rendering) { queued = true; return; }
   rendering = true;
   try {
     const { screen, params } = readHash();
@@ -208,6 +211,7 @@ async function draw(push = false) {
     el('subtitle').textContent = `Не вдалося побудувати екран: ${err.message}`;
   } finally {
     rendering = false;
+    if (queued) { queued = false; draw(); }
   }
 }
 

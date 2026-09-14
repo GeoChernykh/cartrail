@@ -77,7 +77,10 @@ body { padding: 28px 28px 28px 28px; }
 /* ---------------------------------------------------------------- slab --- */
 
 .slab {
-  margin-left: 64px;             /* rail buttons sit half on, half off */
+  /* The rail spans 28–100px of the viewport, so this margin (added to the 28px
+     body padding) puts the slab's left edge at 64px — the button centre line,
+     leaving each button half on and half off the slab. */
+  margin-left: 36px;
   background: var(--slab);
   border-radius: var(--radius-slab);
   padding: 36px 40px 40px;
