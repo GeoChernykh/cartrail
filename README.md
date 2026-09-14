@@ -1,6 +1,6 @@
 # CarTrail UA
 
-A two-screen static web app over Ukraine's vehicle-registration register:
+A three-screen static web app over Ukraine's vehicle-registration register:
 
 - **Карта міграції авто** — where used cars move between oblasts. A net-balance
   choropleth with a flow-arc layer, a direction matrix, and a ranked corridor
@@ -10,6 +10,10 @@ A two-screen static web app over Ukraine's vehicle-registration register:
   with event annotations, median age at registration, resale rate, median
   ownership duration, owner split, fuel/colour/body mix, regional concentration,
   and national rank over time. Two models can be compared on shared axes.
+- **Про дані** — what the figures mean and what they cannot say: KOATUU coverage
+  and exact-duplicate rates per year, the move definition with its denominator,
+  the data limitations, and the sources with their licences. Every number on it
+  is read from `meta.json`, so it tracks the data rather than restating it.
 
 The interface is Ukrainian. Registry vocabularies (`FUEL`, `COLOR`, `BODY`,
 `KIND`) are shown exactly as published — nothing is translated.
@@ -76,6 +80,17 @@ reuses an existing `build/registrations.parquet` when only the tail changed.
 The raw ZIPs, the 8.6 GB merged CSV and `build/` are gitignored. Stage 10 needs
 `data/merged_registrations.csv`, produced by `data/merge_data.py`.
 
+Fonts are vendored the same way the d3 bundle is — downloaded once, committed,
+never fetched at runtime. Re-run only when the font itself should change:
+
+```
+.venv\Scripts\python.exe scripts\fetch_fonts.py
+```
+
+It writes the four Inter `woff2` subsets into `docs/fonts/` and regenerates the
+`@font-face` block between the markers at the top of `docs/css/app.css`. Do not
+hand-edit that region.
+
 To preview the site locally:
 
 ```
@@ -99,6 +114,8 @@ front-end is relative, so the `/<repo>/` base path needs no configuration.
 scripts/     01..06  diagnostic pass (data_diagnostic.md)
              10..15  build pipeline, build_all.py, verify.py
              common.py, dims.py  shared helpers and dimension tables
-docs/        the deployed site: index.html, css/, js/, vendor/d3.v7.min.js, data/
+             fetch_fonts.py  vendors Inter into docs/fonts/
+docs/        the deployed site: index.html, css/, js/, fonts/,
+             vendor/d3.v7.min.js, data/
 data/        raw archives and the merged CSV (gitignored), merge_data.py
 ```

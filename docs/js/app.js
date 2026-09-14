@@ -1,20 +1,25 @@
-// Shell: rail routing, the segmented period control, the filter strip, the
-// «Про дані» panel, and the URL hash that carries the full filter state so any
-// view is shareable and survives a reload.
+// Shell: rail routing, the segmented period control, the filter strip, and the
+// URL hash that carries the full filter state so any view is shareable and
+// survives a reload.
+//
+// Every screen is a module exporting the same shape -- defaults(), ranges,
+// rangeKey, controls(), optional prepare(), render() -- so adding one is a
+// single entry in SCREENS and nothing here special-cases a screen by name.
 
 import { loadMeta } from './data.js';
-import { readHash, writeHash, num, pct } from './fmt.js';
+import { readHash, writeHash, num } from './fmt.js';
 import * as mapScreen from './map.js';
 import * as scorecard from './scorecard.js';
+import * as about from './about.js';
 
 const SCREENS = {
   map: { title: 'Карта міграції авто', section: 'screen-map', mod: mapScreen },
   model: { title: 'Картка моделі', section: 'screen-model', mod: scorecard },
+  about: { title: 'Про дані', section: 'screen-about', mod: about },
 };
 
 let meta = null;
 let current = 'map';
-let aboutOpen = false;
 let rendering = false;
 let queued = false;
 
@@ -39,14 +44,16 @@ function paramsFor(screen, state) {
 
 function renderSeg(screen, state, setState) {
   const seg = el('seg');
+  const { ranges, rangeKey } = SCREENS[screen].mod;
   seg.replaceChildren();
-  for (const r of SCREENS[screen].mod.ranges) {
+  // A screen with no ranges keeps the burger and nothing else; it also has no
+  // rangeKey, so the loop must not run at all rather than read a missing key.
+  for (const r of ranges) {
     const b = document.createElement('button');
     b.type = 'button';
     b.textContent = r.label;
-    const key = screen === 'map' ? 'years' : 'range';
-    b.setAttribute('aria-pressed', String(state[key] === r.id));
-    b.addEventListener('click', () => setState({ [key]: r.id }));
+    b.setAttribute('aria-pressed', String(state[rangeKey] === r.id));
+    b.addEventListener('click', () => setState({ [rangeKey]: r.id }));
     seg.append(b);
   }
   const burger = document.createElement('span');
@@ -54,6 +61,113 @@ function renderSeg(screen, state, setState) {
   burger.setAttribute('aria-hidden', 'true');
   burger.innerHTML = '<i></i><i></i><i></i>';
   seg.append(burger);
+}
+
+/** Autocomplete for the model pickers.
+ *
+ *  A native <datalist> is not usable here: it never reports WHICH option the
+ *  user chose, only the text that landed in the input, and browsers disagree on
+ *  whether picking even fires `input`. Matching that text back to a row is what
+ *  broke the finder -- the option text carries a « · 12 тис.» count suffix that
+ *  the suggestion filter does not match, so the lookup always missed and the
+ *  charts kept showing the previous model. This selects by the row's own key
+ *  and never compares display strings. */
+function combobox(spec, state, setState) {
+  const wrap = document.createElement('span');
+  wrap.className = 'combo';
+  const input = document.createElement('input');
+  input.type = 'search';
+  input.placeholder = spec.placeholder || '';
+  input.value = spec.display(state[spec.key]) || '';
+  input.autocomplete = 'off';
+  input.setAttribute('role', 'combobox');
+  input.setAttribute('aria-expanded', 'false');
+  input.setAttribute('aria-autocomplete', 'list');
+
+  const list = document.createElement('ul');
+  list.setAttribute('role', 'listbox');
+  list.hidden = true;
+
+  let rows = [];
+  let active = -1;
+
+  const close = () => {
+    list.hidden = true;
+    list.replaceChildren();
+    input.setAttribute('aria-expanded', 'false');
+    active = -1;
+  };
+
+  const highlight = () => {
+    [...list.children].forEach((li, i) => {
+      li.setAttribute('aria-selected', String(i === active));
+      if (i === active) li.scrollIntoView({ block: 'nearest' });
+    });
+  };
+
+  const choose = (i) => {
+    const row = rows[i];
+    if (!row) return;
+    close();
+    setState({ [spec.key]: row.v });
+  };
+
+  const open = () => {
+    rows = spec.suggest(input.value);
+    list.replaceChildren(...(rows.length ? rows : [null]).map((row, i) => {
+      const li = document.createElement('li');
+      if (!row) {
+        li.className = 'none';
+        li.textContent = 'Нічого не знайдено';
+        return li;
+      }
+      li.setAttribute('role', 'option');
+      li.setAttribute('aria-selected', 'false');
+      const name = document.createElement('b');
+      name.textContent = row.label ?? row.t;
+      const count = document.createElement('span');
+      count.textContent = row.hint ?? '';
+      li.append(name, count);
+      li.addEventListener('mousedown', (ev) => { ev.preventDefault(); choose(i); });
+      return li;
+    }));
+    list.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+    active = -1;
+  };
+
+  input.addEventListener('focus', () => {
+    // The field shows the current model, so without this the first keystroke
+    // appends to it ("VOLKSWAGEN PASSAT" + "OCTAVIA") and matches nothing.
+    input.select();
+    open();
+  });
+  input.addEventListener('input', open);
+  input.addEventListener('blur', () => setTimeout(close, 120));
+  input.addEventListener('keydown', (ev) => {
+    if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+      ev.preventDefault();
+      if (list.hidden) open();
+      if (!rows.length) return;
+      active = ev.key === 'ArrowDown'
+        ? (active + 1) % rows.length
+        : (active <= 0 ? rows.length : active) - 1;
+      highlight();
+    } else if (ev.key === 'Enter') {
+      ev.preventDefault();
+      choose(active >= 0 ? active : 0);
+    } else if (ev.key === 'Escape') {
+      close();
+      input.blur();
+    }
+  });
+  // The native clear button on input[type=search] fires `search`, not `input`.
+  input.addEventListener('search', () => {
+    if (!input.value) { close(); setState({ [spec.key]: '' }); }
+  });
+
+  wrap.append(input, list);
+  return wrap;
 }
 
 function renderFilters(screen, state, setState) {
@@ -78,32 +192,7 @@ function renderFilters(screen, state, setState) {
       input.addEventListener('change', () => setState({ [spec.key]: input.value }));
       label.append(input, out);
     } else if (spec.type === 'search') {
-      const input = document.createElement('input');
-      input.type = 'search';
-      input.placeholder = spec.placeholder || '';
-      input.value = spec.display(state[spec.key]) || '';
-      const listId = `dl-${spec.key}`;
-      const dl = document.createElement('datalist');
-      dl.id = listId;
-      input.setAttribute('list', listId);
-      const fill = () => {
-        dl.replaceChildren(...spec.suggest(input.value).map((o) => {
-          const opt = document.createElement('option');
-          opt.value = o.t;
-          opt.dataset.value = o.v;
-          return opt;
-        }));
-      };
-      fill();
-      input.addEventListener('input', () => {
-        fill();
-        const hit = [...dl.children].find((o) => o.value === input.value);
-        if (hit) setState({ [spec.key]: hit.dataset.value });
-      });
-      input.addEventListener('search', () => {
-        if (!input.value) setState({ [spec.key]: '' });
-      });
-      label.append(input, dl);
+      label.append(combobox(spec, state, setState));
     } else {
       const sel = document.createElement('select');
       for (const o of spec.options) {
@@ -118,59 +207,6 @@ function renderFilters(screen, state, setState) {
     }
     box.append(label);
   }
-}
-
-function renderAbout() {
-  const box = el('about');
-  box.hidden = !aboutOpen;
-  if (!aboutOpen || box.dataset.built) return;
-  box.dataset.built = '1';
-  const y2020 = meta.years.find((y) => y.year === 2020);
-  const y2025 = meta.years.find((y) => y.year === 2025);
-  const mig = meta.migration;
-  const dup2025 = meta.duplicate_row_pct['2025'];
-  box.innerHTML = `
-    <h2 id="about-h">Про дані</h2>
-    <ul>
-      <li>Джерело — <a href="${meta.source.dataset}">${meta.source.name}</a>,
-        ${meta.source.publisher}, ${meta.source.portal}.
-        ${num(meta.source.rows)} записів за ${meta.source.years[0]}–${meta.source.years[1]}.
-        Один рядок — одна реєстраційна дія, а не одне авто.</li>
-      <li><strong>Ідентичність авто розділена.</strong> VIN є лише у 2021–2026,
-        номерний знак — лише у 2013–2025. У перетині 26,0% VIN мають більше ніж
-        один номер, тому зв’язування по номеру рве історію приблизно кожного
-        четвертого авто. Усе зв’язування тут — тільки по VIN.</li>
-      <li><strong>KOATUU — це область реєстрації власника, а не місцезнаходження
-        авто.</strong> Карта показує проксі того, куди авто потрапляє.</li>
-      <li><strong>Карта міграції побудована на 2021–2025</strong> — єдине вікно,
-        де VIN і KOATUU існують одночасно. У 2026 немає ані коду області, ані
-        номерного знака.</li>
-      <li>Рух визначено як <em>перша зафіксована реєстрація у вікні 2021–2025 →
-        наступна зафіксована подія</em>. Вікно обрізане зліва, тому це не
-        «перша реєстрація» авто. Операційні коди не класифікуються взагалі.</li>
-      <li>${num(mig.dropped_no_valid_destination)} VIN
-        (${pct(mig.dropped_share_of_later, 2)} тих, у кого є пізніша подія) мають
-        пізніші події без дійсного коду області — їх виключено зі знаменника, а
-        не зараховано як «лишився».</li>
-      <li>Комірки з менш ніж ${mig.min_cell} авто приховано:
-        ${num(mig.pairs_suppressed)} пар (${pct(mig.pairs_suppressed_pct, 2)}).</li>
-      <li class="flag"><strong>2020 рік позначено:</strong> лише
-        ${pct(y2020.koatuu_valid_pct, 1)} рядків того року мають коректний
-        10-значний KOATUU. Географію 2020 не варто читати як інші роки.</li>
-      <li><strong>Два з трьох архівів 2022 року — дублікати 2021-го</strong>
-        (${meta.source.excluded_archives.join(', ')}) і виключені повністю.</li>
-      <li>У ${y2025.year} році ${pct(dup2025, 2)} рядків — точні дублікати.
-        На карту міграції це не впливає (події одного дня не створюють переїзду),
-        але річні лічильники реєстрацій їх містять.</li>
-      <li><strong>Окуповані території.</strong> Частки Криму, Донеччини й
-        Луганщини в реєстрі падають протягом серії. Це відсутність у реєстрі,
-        а не відсутність у країні.</li>
-      <li>Моделі з менш ніж ${num(meta.models.threshold)} реєстраціями не
-        показуються: у картках ${num(meta.models.models_included)} моделей
-        ${num(meta.models.brands_included)} марок.</li>
-      <li>Межі областей — ${meta.geo.source}, ліцензія ${meta.geo.license}.
-        Зібрано ${meta.built}.</li>
-    </ul>`;
 }
 
 function setScreen(next) {
@@ -202,7 +238,6 @@ async function draw(push = false) {
     await SCREENS[name].mod.prepare?.();
     renderSeg(name, state, setState);
     renderFilters(name, state, setState);
-    renderAbout();
     const subtitle = await SCREENS[name].mod.render(document, meta, state, setState);
     el('subtitle').textContent = subtitle || '';
     if (push) writeHash(name, paramsFor(name, state), true);
@@ -219,12 +254,6 @@ async function main() {
   meta = await loadMeta();
   document.querySelectorAll('.rail button').forEach((b) => {
     b.addEventListener('click', () => {
-      if (b.dataset.screen === 'about') {
-        aboutOpen = !aboutOpen;
-        b.setAttribute('aria-current', String(aboutOpen));
-        renderAbout();
-        return;
-      }
       writeHash(b.dataset.screen, new URLSearchParams());
       draw();
     });

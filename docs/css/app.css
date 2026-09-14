@@ -1,3 +1,40 @@
+/* --- generated: inter @font-face --- */
+/* Inter, variable (100-900) per unicode subset. Regenerate with
+   scripts/fetch_fonts.py -- do not hand-edit between these markers. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../fonts/inter-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../fonts/inter-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* --- end generated --- */
+
 /* CarTrail UA -- one hand-written stylesheet, no build step.
    The visual contract is dashboard-style-prompt.md: a flat light-grey field,
    one rounded slab, a floating icon rail, white cards with a shadow that reads
@@ -23,7 +60,9 @@
   --radius-card: 8px;
   --gap: 20px;
   --shadow: 0 1px 3px rgba(0, 0, 0, .08);
-  --font: "Segoe UI", Inter, "Source Sans 3", system-ui, -apple-system, sans-serif;
+  /* Inter is vendored in docs/fonts (scripts/fetch_fonts.py); the rest is only
+     a fallback for the moment before the woff2 lands. */
+  --font: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -83,7 +122,9 @@ body { padding: 28px 28px 28px 28px; }
   margin-left: 36px;
   background: var(--slab);
   border-radius: var(--radius-slab);
-  padding: 36px 40px 40px;
+  /* Extra left padding so the title clears the rail buttons overlapping the
+     slab edge; everything else keeps the contract's 40px. */
+  padding: 36px 40px 40px 60px;
   min-height: calc(100vh - 56px);
 }
 
@@ -146,6 +187,40 @@ h1 {
 .filters input[type="search"] { width: 240px; }
 .filters input[type="range"] { accent-color: var(--blue); width: 130px; }
 .filters .hint { color: var(--ink); opacity: .7; }
+/* The about screen declares no controls, so the strip collapses rather than
+   leaving a gap where it used to be. */
+.filters:empty { display: none; margin: 0; }
+
+/* Model autocomplete. A native <datalist> cannot report which option was
+   chosen, so this is a real listbox. */
+.combo { position: relative; display: inline-flex; align-items: center; }
+.combo ul {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  left: -8px;
+  min-width: 280px;
+  max-height: 320px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+  background: var(--card);
+  border-radius: var(--radius-card);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .14);
+}
+.combo li {
+  padding: 7px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  white-space: nowrap;
+}
+.combo li[aria-selected="true"] { background: var(--slab); }
+.combo li b { font-weight: 400; }
+.combo li span { color: var(--muted); font-variant-numeric: tabular-nums; }
+.combo li.none { color: var(--muted); cursor: default; }
 
 /* --------------------------------------------------------------- cards --- */
 
@@ -166,9 +241,16 @@ h1 {
 .card .win { font-size: 14px; color: var(--muted); text-align: center; margin: 0 0 12px; }
 
 .kpi { display: flex; flex-direction: column; }
-.kpi .label { font-size: 20px; font-weight: 400; text-align: center; margin: 0; }
+/* Two lines' worth of room so a label that wraps ("Вік при реєстрації ·
+   2013–2026") does not push its number out of line with the neighbouring
+   cards. */
+.kpi .label { font-size: 20px; font-weight: 400; text-align: center; margin: 0;
+  min-height: 2.6em; display: flex; align-items: center; justify-content: center; }
 .kpi .value { font-size: 56px; font-weight: 600; letter-spacing: -.02em;
-  text-align: center; margin: 6px 0 0; line-height: 1.05; }
+  text-align: center; margin: 6px 0 0; line-height: 1.05;
+  /* Inter's default figures are proportional, so a KPI would jiggle sideways
+     as its digits change between renders. */
+  font-variant-numeric: tabular-nums; }
 .kpi .note { font-size: 14px; color: var(--muted); text-align: center; margin: 2px 0 0; }
 .kpi .spark { height: 52px; margin-top: 10px; }
 
@@ -204,12 +286,19 @@ table.corridors .bar { background: var(--blue); height: 10px; display: block; }
 
 /* --------------------------------------------------------------- about --- */
 
-.about { background: var(--card); border-radius: var(--radius-card);
-  box-shadow: var(--shadow); padding: 20px 24px; margin-bottom: var(--gap); }
-.about h2 { font-size: 20px; font-weight: 700; margin: 0 0 10px; text-align: left; }
-.about ul { margin: 0; padding-left: 20px; }
-.about li { margin: 6px 0; max-width: 92ch; }
-.about .flag { color: var(--warm); }
+/* Text cards on the «Про дані» screen. Same card shell as every other card;
+   only the type is left-aligned and given a reading measure. */
+.prose h2 { text-align: left; }
+.prose .win { text-align: left; }
+.prose ul { margin: 0; padding-left: 20px; }
+.prose li { margin: 8px 0; max-width: 78ch; }
+.prose p { margin: 0 0 10px; max-width: 78ch; }
+.prose a { color: var(--blue); }
+.prose .flag { color: var(--warm); }
+.prose dl { margin: 0; display: grid; grid-template-columns: auto 1fr;
+  gap: 6px 16px; }
+.prose dt { color: var(--muted); }
+.prose dd { margin: 0; font-variant-numeric: tabular-nums; }
 
 .empty { color: var(--muted); text-align: center; padding: 40px 0; }
 

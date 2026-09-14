@@ -21,6 +21,7 @@ export async function prepare() {
   if (!geo) geo = await loadGeo();
 }
 
+export const rangeKey = 'range';
 export const ranges = [
   { id: '2013-2026', label: '2013–2026' },
   { id: '2019-2026', label: '2019–2026' },
@@ -30,13 +31,16 @@ export const ranges = [
 const keyOf = (row) => `${row.s}|${row.m}`;
 const labelOf = (row) => `${index.brands[row.b]} ${row.m}`;
 
+/** Suggestions for the combobox: the key is what gets selected, `label` and
+ *  `hint` are only ever displayed. index.models is pre-sorted by volume, so the
+ *  first 30 matches are the 30 most-registered. */
 function suggest(q) {
   if (!index) return [];
   const needle = q.trim().toUpperCase();
   const out = [];
   for (const row of index.models) {
     if (needle && !labelOf(row).toUpperCase().includes(needle)) continue;
-    out.push({ v: keyOf(row), t: `${labelOf(row)} · ${compact(row.n)}` });
+    out.push({ v: keyOf(row), label: labelOf(row), hint: compact(row.n) });
     if (out.length >= 30) break;
   }
   return out;

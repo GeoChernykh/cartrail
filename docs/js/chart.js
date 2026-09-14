@@ -50,7 +50,7 @@ export function mount(el, height, draw) {
 }
 
 /** The single dotted gridline, at the largest round value that fits. */
-function gridline(svg, x0, x1, y, max) {
+function gridline(svg, x0, x1, y, max, fmt = tick) {
   const candidates = d3.ticks(0, max, 4).filter((t) => t > 0 && t <= max);
   const at = candidates[candidates.length - 1];
   if (at == null) return;
@@ -59,14 +59,28 @@ function gridline(svg, x0, x1, y, max) {
     .attr('stroke', C.inert).attr('stroke-dasharray', '2 4');
   svg.append('text')
     .attr('x', 0).attr('y', y(at) + 4)
-    .attr('fill', C.muted).attr('font-size', 12).text(tick(at));
+    .attr('fill', C.muted).attr('font-size', 12).text(fmt(at));
   svg.append('text')
     .attr('x', 0).attr('y', y(0) + 4)
-    .attr('fill', C.muted).attr('font-size', 12).text('0');
+    .attr('fill', C.muted).attr('font-size', 12).text(fmt(0));
 }
 
-function truncate(s, max) {
-  return s.length > max ? `${s.slice(0, max - 1)}…` : s;
+/** Trim a label until it actually fits, measuring the rendered glyphs instead
+ *  of guessing from character count -- Cyrillic caps are wider than the 7.2px
+ *  average and were overflowing the label column. */
+function fitLabel(node, text, maxWidth) {
+  node.text(text);
+  const el = node.node();
+  if (!el.getComputedTextLength || el.getComputedTextLength() <= maxWidth) return;
+  let lo = 1;
+  let hi = text.length;
+  while (lo < hi) {
+    const mid = Math.ceil((lo + hi) / 2);
+    node.text(`${text.slice(0, mid)}…`);
+    if (el.getComputedTextLength() <= maxWidth) lo = mid;
+    else hi = mid - 1;
+  }
+  node.text(`${text.slice(0, lo)}…`);
 }
 
 /** Horizontal bars, sorted descending, labels right-aligned in a fixed column. */
@@ -84,11 +98,11 @@ export function hbars(el, items, opts = {}) {
     const x = d3.scaleLinear().domain([0, max || 1]).range([x0, x1]);
     rows.forEach((d, i) => {
       const y = i * (barHeight + gap) + 4;
-      svg.append('text')
+      const text = svg.append('text')
         .attr('x', labelWidth).attr('y', y + barHeight / 2 + 4)
-        .attr('text-anchor', 'end').attr('font-size', 14).attr('fill', C.ink)
-        .text(truncate(d.label, Math.max(Math.floor(labelWidth / 7.2), 6)))
-        .append('title').text(d.label);
+        .attr('text-anchor', 'end').attr('font-size', 14).attr('fill', C.ink);
+      fitLabel(text, d.label, labelWidth);
+      text.append('title').text(d.label);
       svg.append('rect')
         .attr('x', x0).attr('y', y)
         .attr('width', Math.max(x(d.value) - x0, d.value > 0 ? 1 : 0))
@@ -104,7 +118,7 @@ export function hbars(el, items, opts = {}) {
 
 /** Vertical bars: solid primary blue, ~30% gap, square corners, one colour. */
 export function vbars(el, items, opts = {}) {
-  const { height = 240, everyNth = null, fill = C.blue } = opts;
+  const { height = 240, everyNth = null, fill = C.blue, fmt = tick } = opts;
   mount(el, height, (svg, w) => {
     if (!items.length) return;
     const pad = { l: 46, r: 6, t: 10, b: 24 };
@@ -113,13 +127,13 @@ export function vbars(el, items, opts = {}) {
       .range([height - pad.b, pad.t]);
     const x = d3.scaleBand().domain(items.map((d) => d.label))
       .range([pad.l, w - pad.r]).padding(0.3);
-    gridline(svg, pad.l, w - pad.r, y, max);
+    gridline(svg, pad.l, w - pad.r, y, max, fmt);
     svg.selectAll('rect.b').data(items).join('rect').attr('class', 'b')
       .attr('x', (d) => x(d.label)).attr('width', x.bandwidth())
       .attr('y', (d) => y(d.value))
       .attr('height', (d) => Math.max(y(0) - y(d.value), 0))
       .attr('fill', (d, i) => (typeof fill === 'function' ? fill(d, i) : fill))
-      .append('title').text((d) => `${d.label}: ${tick(d.value)}`);
+      .append('title').text((d) => `${d.label}: ${fmt(d.value)}`);
     sparseLabels(svg, items.map((d) => d.label), x, height - pad.b + 16, everyNth);
   });
 }
@@ -146,15 +160,25 @@ export function stackedBars(el, items, keys, colors, opts = {}) {
   });
 }
 
+/** Four or five labels across the full range, never one per bar. The last
+ *  category is always labelled; if the tick before it would land within one
+ *  step, that tick is dropped rather than overprinting ("2025 2026"). */
 function sparseLabels(svg, labels, x, y, everyNth = null) {
+  if (!labels.length) return;
   const step = everyNth ?? Math.max(1, Math.ceil(labels.length / 5));
-  labels.forEach((l, i) => {
-    if (i % step && i !== labels.length - 1) return;
+  const last = labels.length - 1;
+  const idx = [];
+  for (let i = 0; i <= last; i += step) idx.push(i);
+  if (idx[idx.length - 1] !== last) {
+    if (last - idx[idx.length - 1] < step) idx.pop();
+    idx.push(last);
+  }
+  for (const i of idx) {
     svg.append('text')
-      .attr('x', x(l) + x.bandwidth() / 2).attr('y', y)
+      .attr('x', x(labels[i]) + x.bandwidth() / 2).attr('y', y)
       .attr('text-anchor', 'middle').attr('font-size', 14).attr('fill', C.muted)
-      .text(l);
-  });
+      .text(labels[i]);
+  }
 }
 
 /** Lines (optionally with a very low opacity area). Never stacked. */
@@ -204,13 +228,21 @@ export function lines(el, series, xs, opts = {}) {
       svg.append('path').attr('d', gen(pts)).attr('fill', 'none')
         .attr('stroke', s.color).attr('stroke-width', 2);
     });
+    // Same sparse-label rule as the bar charts: last tick always drawn, and the
+    // one before it dropped when they would collide.
     const step = Math.max(1, Math.ceil(xs.length / 5));
-    xs.forEach((v, i) => {
-      if (i % step && i !== xs.length - 1) return;
-      svg.append('text').attr('x', x(String(v))).attr('y', height - pad.b + 18)
+    const last = xs.length - 1;
+    const idx = [];
+    for (let i = 0; i <= last; i += step) idx.push(i);
+    if (idx[idx.length - 1] !== last) {
+      if (last - idx[idx.length - 1] < step) idx.pop();
+      idx.push(last);
+    }
+    for (const i of idx) {
+      svg.append('text').attr('x', x(String(xs[i]))).attr('y', height - pad.b + 18)
         .attr('text-anchor', 'middle').attr('font-size', 14).attr('fill', C.muted)
-        .text(xLabel(v));
-    });
+        .text(xLabel(xs[i]));
+    }
     if (invert) {
       [min, max].forEach((v) => svg.append('text').attr('x', 0).attr('y', y(v) + 4)
         .attr('font-size', 12).attr('fill', C.muted).text(v));

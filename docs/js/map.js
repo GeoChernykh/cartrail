@@ -27,6 +27,7 @@ export async function prepare() {
   if (!geo) geo = await loadGeo();
 }
 
+export const rangeKey = 'years';
 export const ranges = [
   { id: '2021-2025', label: '2021–2025' },
   { id: '2023-2025', label: '2023–2025' },

@@ -32,8 +32,6 @@
     <div class="seg" id="seg" role="group" aria-label="Період"></div>
   </div>
 
-  <section class="about" id="about" hidden aria-labelledby="about-h"></section>
-
   <div class="filters" id="filters"></div>
 
   <section id="screen-map" class="screen">
@@ -114,6 +112,39 @@
         <h2>Тип кузова</h2>
         <p class="win">2013–2026</p>
         <div class="chart" id="c-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-about" class="screen" hidden>
+    <div class="row row-kpi" id="about-kpis"></div>
+    <div class="row row-112">
+      <div class="card">
+        <h2>Валідний KOATUU за роками</h2>
+        <p class="win">частка рядків із коректним 10-значним кодом області</p>
+        <div class="chart" id="c-koatuu"></div>
+      </div>
+      <div class="card">
+        <h2>Точні дублікати рядків</h2>
+        <p class="win">частка рядків, ідентичних іншому рядку того самого року</p>
+        <div class="chart" id="c-dupes"></div>
+      </div>
+      <div class="card prose">
+        <h2>Що тут вважається «переїздом»</h2>
+        <p class="win">визначення, вікно та знаменник</p>
+        <div id="about-move"></div>
+      </div>
+    </div>
+    <div class="row row-11">
+      <div class="card prose">
+        <h2>Обмеження даних</h2>
+        <p class="win">чого з цих цифр не можна робити висновків</p>
+        <div id="about-limits"></div>
+      </div>
+      <div class="card prose">
+        <h2>Джерела та ліцензії</h2>
+        <p class="win">звідки все взялося</p>
+        <div id="about-sources"></div>
       </div>
     </div>
   </section>

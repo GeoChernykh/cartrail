@@ -155,6 +155,11 @@ def no_absolute_paths() -> None:
         re.compile(r'fetch\(\s*["\']/'),
         re.compile(r'(?:src|href)\s*=\s*["\']https?://'),
         re.compile(r'fetch\(\s*["\']https?://'),
+        # CSS uses url(), not src=/href=, so a @font-face still pointing at
+        # fonts.gstatic.com would slip past the patterns above -- which is
+        # exactly the runtime external fetch this check exists to prevent.
+        re.compile(r'url\(\s*["\']?(?:https?:)?//'),
+        re.compile(r'@import\s+(?:url\()?\s*["\']?(?:https?:)?//'),
     ]
     for path in list(docs.rglob("*.html")) + list(docs.rglob("*.js")) \
             + list(docs.rglob("*.css")):
