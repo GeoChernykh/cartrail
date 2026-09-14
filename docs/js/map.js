@@ -205,13 +205,16 @@ function kpis(el, agg, meta, state) {
       spark: agg.perYear.map((y) => share(y.diag, y.origin)),
     }),
     kpiCard({
-      label: 'Днів до наступної події',
+      // No sparkline here on purpose. move_year is the year of the SECOND
+      // event and the window opens in 2021, so a 2021 move must fit both events
+      // inside one year while a 2025 move may span four. The per-year medians
+      // therefore climb 49 -> 505 days by construction, and a sparkline would
+      // read as a trend when it is only the shape of the window.
+      label: 'Авто в одного власника',
       value: medDays == null ? '—' : num(Math.round(medDays)),
-      note: agg.hasDh ? estimate
-        : 'уся Україна, усі типи власників, усе пальне',
-      spark: agg.hasDh
-        ? agg.perYear.map((y) => bandMedian(y.dh, dEdges))
-        : yearsOf(state).map((y) => bandMedian(national[String(y)] || [], dEdges)),
+      note: agg.hasDh
+        ? `днів між двома зафіксованими подіями VIN, ${estimate}`
+        : 'днів між двома подіями VIN — уся Україна, усі типи власників, усе пальне',
     }),
     kpiCard({
       label: 'Вік авто на момент переїзду',

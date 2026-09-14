@@ -273,11 +273,14 @@ export function legend(el, entries) {
 export function kpiCard({ label, value, note, spark: sparkValues, color }) {
   const card = document.createElement('div');
   card.className = 'card kpi';
+  const hasSpark = Array.isArray(sparkValues) && sparkValues.some((v) => v != null);
   card.innerHTML =
     `<p class="label">${label}</p><p class="value">${value}</p>` +
-    `<p class="note">${note ?? ''}</p><div class="spark"></div>`;
-  queueMicrotask(() => {
-    if (sparkValues?.length) spark(card.querySelector('.spark'), sparkValues, color);
-  });
+    `<p class="note">${note ?? ''}</p>` +
+    // No empty 52px well when a KPI has no meaningful series to draw.
+    (hasSpark ? '<div class="spark"></div>' : '');
+  if (hasSpark) {
+    queueMicrotask(() => spark(card.querySelector('.spark'), sparkValues, color));
+  }
   return card;
 }
