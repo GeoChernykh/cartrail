@@ -155,28 +155,30 @@ def build_moves(con: duckdb.DuckDBPyConnection, say) -> dict:
           END AS ageb
         FROM pairs
     """)
-    n, diag, med = con.execute("""
-        SELECT COUNT(*), SUM(CASE WHEN from_ob = to_ob THEN 1 ELSE 0 END), MEDIAN(dgap)
+    n, diag, med, sd = con.execute("""
+        SELECT COUNT(*), SUM(CASE WHEN from_ob = to_ob THEN 1 ELSE 0 END),
+               MEDIAN(dgap), SUM(dgap)
         FROM mv
     """).fetchone()
     say(f"\n- pairs in the cube (diagonal kept): **{n:,}**")
     say(f"- retention — second event in the same oblast: **{100 * diag / n:.2f}%**")
     say(f"- exact median days between the two events: **{med:,.0f}**")
+    say(f"- exact mean days between the two events: **{sd / n:,.1f}**")
 
     nulls = con.execute("SELECT COUNT(*) FROM mv WHERE person IS NULL").fetchone()[0]
     if nulls:
         dims.fail(f"{nulls:,} pairs have a NULL owner type; PERSON is never null in this data")
 
-    say("\n| move_year | pairs | retention | median days |")
-    say("|---|---|---|---|")
+    say("\n| move_year | pairs | retention | median days | mean days |")
+    say("|---|---|---|---|---|")
     by_year = con.execute("""
         SELECT move_year, COUNT(*),
                100.0 * SUM(CASE WHEN from_ob = to_ob THEN 1 ELSE 0 END) / COUNT(*),
-               MEDIAN(dgap)
+               MEDIAN(dgap), SUM(dgap)
         FROM mv GROUP BY 1 ORDER BY 1
     """).fetchall()
-    for y, c, r, m in by_year:
-        say(f"| {y} | {c:,} | {r:.2f}% | {m:,.0f} |")
+    for y, c, r, m, ys in by_year:
+        say(f"| {y} | {c:,} | {r:.2f}% | {m:,.0f} | {ys / c:,.1f} |")
 
     # National days histogram per year, on the same 8 bins as the cube. When the
     # overflow ladder drops the per-cell histogram the UI still needs a days
@@ -193,8 +195,10 @@ def build_moves(con: duckdb.DuckDBPyConnection, say) -> dict:
     """).fetchall()
     return {"pairs": n, "retention_pct": round(100 * diag / n, 2),
             "median_days_exact": int(med),
+            "mean_days_exact": round(sd / n, 1),
             "by_year": {str(y): {"pairs": c, "retention_pct": round(r, 2),
-                                 "median_days": int(m)} for y, c, r, m in by_year},
+                                 "median_days": int(m), "mean_days": round(ys / c, 1)}
+                       for y, c, r, m, ys in by_year},
             "days_hist_by_year": {str(row[0]): list(row[1:]) for row in hist}}
 
 
@@ -212,6 +216,7 @@ def write_cube(con: duckdb.DuckDBPyConnection, say) -> dict:
     last_lo = dims.DAYS_BIN_EDGES[-1][0]
     cells = con.execute(f"""
         SELECT from_ob, to_ob, move_year, person, {group_fg}, ageb, COUNT(*) AS n,
+          SUM(dgap) AS sd,
 {dh_cases},
           COUNT(*) FILTER (WHERE dgap >= {last_lo}) AS d{len(dims.DAYS_BIN_EDGES) - 1}
         FROM mv GROUP BY 1, 2, 3, 4, 5, 6
@@ -238,10 +243,10 @@ def write_cube(con: duckdb.DuckDBPyConnection, say) -> dict:
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     per_year: dict[int, dict] = {y: {"from": [], "to": [], "own": [], "fuel": [],
-                                     "ageb": [], "n": [], "dh": []}
+                                     "ageb": [], "n": [], "sd": [], "dh": []}
                                  for y in dims.MIGRATION_YEARS}
     for row in cells:
-        from_ob, to_ob, year, person, fg, ageb, n = row[:7]
+        from_ob, to_ob, year, person, fg, ageb, n, sd = row[:8]
         d = per_year[year]
         d["from"].append(oi[from_ob])
         d["to"].append(oi[to_ob])
@@ -250,8 +255,9 @@ def write_cube(con: duckdb.DuckDBPyConnection, say) -> dict:
             d["fuel"].append(fi.get(fg, unknown_fuel) if fg else unknown_fuel)
         d["ageb"].append(ageb)
         d["n"].append(n)
+        d["sd"].append(sd)
         if ship_dh:
-            d["dh"].append(list(row[7:]))
+            d["dh"].append(list(row[8:]))
 
     sizes = {}
     for year, d in per_year.items():
@@ -282,9 +288,12 @@ def write_cube(con: duckdb.DuckDBPyConnection, say) -> dict:
 def write_exact_medians(con: duckdb.DuckDBPyConnection, say) -> None:
     """Overflow branch: the cube got too big to carry an 8-bin histogram, so
     medians come from an exact table keyed (from, to, move_year) instead. Tiles
-    reading it are labelled «усі типи власників, усе пальне»."""
+    reading it are labelled «усі типи власників, усе пальне». The mean never
+    needs this fallback -- `sd` ships unconditionally with the cube -- but `n`
+    and `sd` are carried here too so a corridor-level mean can be read from the
+    same table without a second query."""
     rows = con.execute("""
-        SELECT from_ob, to_ob, move_year, COUNT(*) n, MEDIAN(dgap) md
+        SELECT from_ob, to_ob, move_year, COUNT(*) n, MEDIAN(dgap) md, SUM(dgap) sd
         FROM mv GROUP BY 1, 2, 3 HAVING COUNT(*) >= 3 ORDER BY 3, 1, 2
     """).fetchall()
     oi = dims.OBLAST_INDEX
@@ -294,6 +303,7 @@ def write_exact_medians(con: duckdb.DuckDBPyConnection, say) -> None:
         "year": [r[2] for r in rows],
         "n": [r[3] for r in rows],
         "median_days": [int(r[4]) for r in rows],
+        "sd": [int(r[5]) for r in rows],
     }
     path = OUT_DIR / "medians.json"
     path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")

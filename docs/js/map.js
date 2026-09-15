@@ -80,7 +80,7 @@ function aggregate(cubes, state, N) {
     // `total` counts every pair in scope; `origin` counts only pairs that START
     // in the pivoted oblast. Retention is defined on origin, so when an oblast
     // is pivoted its inbound traffic must not dilute the denominator.
-    total: 0, origin: 0, diag: 0, perYear: [], hasDh: true, hasFuel: true,
+    total: 0, origin: 0, diag: 0, sd: 0, perYear: [], hasDh: true, hasFuel: true,
   };
   const ob = state.ob === '' ? null : Number(state.ob);
   const own = state.own === 'all' ? null : Number(state.own);
@@ -92,7 +92,7 @@ function aggregate(cubes, state, N) {
     const withDh = hasDaysHist(cube);
     agg.hasDh &&= withDh;
     agg.hasFuel &&= withFuel;
-    const y = { year: cube.year, total: 0, origin: 0, diag: 0,
+    const y = { year: cube.year, total: 0, origin: 0, diag: 0, sd: 0,
       dh: zeros(8), age: zeros(6) };
     for (let i = 0; i < cube.n.length; i++) {
       if (own !== null && cube.own[i] !== own) continue;
@@ -102,16 +102,18 @@ function aggregate(cubes, state, N) {
       const b = cube.to[i];
       if (ob !== null && a !== ob && b !== ob) continue;
       const v = cube.n[i];
+      const s = cube.sd[i];
       const ab = cube.ageb[i];
       agg.matrix[a][b] += v;
       agg.total += v; y.total += v;
+      agg.sd += s; y.sd += s;
       agg.age[ab] += v; y.age[ab] += v;
       if (ob === null || a === ob) { agg.origin += v; y.origin += v; }
       if (a === b) { agg.diag += v; y.diag += v; }
       const key = a * N + b;
       let c = agg.corr.get(key);
-      if (!c) { c = { a, b, n: 0, dh: zeros(8), age: zeros(6) }; agg.corr.set(key, c); }
-      c.n += v; c.age[ab] += v;
+      if (!c) { c = { a, b, n: 0, sd: 0, dh: zeros(8), age: zeros(6) }; agg.corr.set(key, c); }
+      c.n += v; c.sd += s; c.age[ab] += v;
       if (withDh) {
         const h = cube.dh[i];
         for (let k = 0; k < 8; k++) {
@@ -174,21 +176,9 @@ function medianLookup(state, N) {
 }
 
 function kpis(el, agg, meta, state) {
-  const dEdges = meta.dict.days_bin_edges;
   const aEdges = meta.dict.age_band_edges;
   const moves = agg.total - agg.diag;
   const estimate = 'медіана (оцінка за інтервалами)';
-  // Fallback path: the national per-year histograms in meta, band-interpolated
-  // exactly as the cube's own histogram would be. They ignore every filter, so
-  // the tile says which ones.
-  const national = meta.migration.days_hist_by_year || {};
-  const pooled = yearsOf(state)
-    .map((y) => national[String(y)])
-    .filter(Boolean)
-    .reduce((acc, h) => (acc ? acc.map((v, i) => v + h[i]) : h.slice()), null);
-  const medDays = agg.hasDh
-    ? bandMedian(agg.dh, dEdges)
-    : (pooled ? bandMedian(pooled, dEdges) : null);
   const medAge = bandMedian(agg.age.slice(0, aEdges.length), aEdges);
   const cards = [
     kpiCard({
@@ -207,14 +197,13 @@ function kpis(el, agg, meta, state) {
     kpiCard({
       // No sparkline here on purpose. move_year is the year of the SECOND
       // event and the window opens in 2021, so a 2021 move must fit both events
-      // inside one year while a 2025 move may span four. The per-year medians
-      // therefore climb 49 -> 505 days by construction, and a sparkline would
-      // read as a trend when it is only the shape of the window.
-      label: 'Авто в одного власника',
-      value: medDays == null ? '—' : num(Math.round(medDays)),
-      note: agg.hasDh
-        ? `днів між двома зафіксованими подіями VIN, ${estimate}`
-        : 'днів між двома подіями VIN — уся Україна, усі типи власників, усе пальне',
+      // inside one year while a 2025 move may span four. The per-year means
+      // therefore climb by construction, and a sparkline would read as a trend
+      // when it is only the shape of the window. `sd` ships unconditionally
+      // with the cube, so this mean is exact for any filter, unlike the median
+      // above which falls back to a band-interpolated estimate.
+      label: 'Середнє життя однієї реєстрації',
+      value: agg.total === 0 ? '—' : days(Math.round(agg.sd / agg.total)),
     }),
     kpiCard({
       label: 'Вік авто на момент переїзду',

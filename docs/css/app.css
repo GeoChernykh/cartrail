@@ -241,11 +241,11 @@ h1 {
 .card .win { font-size: 14px; color: var(--muted); text-align: center; margin: 0 0 12px; }
 
 .kpi { display: flex; flex-direction: column; }
-/* Two lines' worth of room so a label that wraps ("Вік при реєстрації ·
-   2013–2026") does not push its number out of line with the neighbouring
-   cards. */
+/* Three lines' worth of room so a label that wraps ("Середнє життя однієї
+   реєстрації" wraps to three lines at 1280px) does not push its number out of
+   line with the neighbouring cards. */
 .kpi .label { font-size: 20px; font-weight: 400; text-align: center; margin: 0;
-  min-height: 2.6em; display: flex; align-items: center; justify-content: center; }
+  min-height: 3.9em; display: flex; align-items: center; justify-content: center; }
 .kpi .value { font-size: 56px; font-weight: 600; letter-spacing: -.02em;
   text-align: center; margin: 6px 0 0; line-height: 1.05;
   /* Inter's default figures are proportional, so a KPI would jiggle sideways

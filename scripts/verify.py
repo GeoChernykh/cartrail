@@ -147,6 +147,66 @@ def independent_recompute(con) -> None:
           f"{name}, фізичні особи: recomputed {mine:,}, shipped {shipped:,}")
 
 
+def independent_recompute_mean(con) -> None:
+    """Re-derive the exact mean from scratch, with the SAME n >= MIN_CELL cell
+    floor the build applies -- omitting that floor is exactly the mistake that
+    cost a mismatched recompute on the age-band check before. Shares no SQL
+    with 13_build_migration.py."""
+    order = ("d_reg, oblast, person, COALESCE(fuel_grp, ''), "
+             "COALESCE(make_year, -1), COALESCE(oper_code, '')")
+    bands = " ".join(
+        f"WHEN age BETWEEN {lo} AND {hi} THEN {i}"
+        for i, (lo, hi) in enumerate(dims.AGE_BAND_EDGES))
+    mine_n, mine_sd = con.execute(f"""
+        WITH e AS (
+          SELECT vin, d_reg, oblast, person, fuel_grp, make_year, oper_code
+          FROM {P}
+          WHERE source_year BETWEEN 2021 AND 2025 AND vin IS NOT NULL
+            AND d_reg IS NOT NULL AND oblast IN {OB}
+        ),
+        first_ev AS (
+          SELECT vin, d_reg AS d1, oblast AS ob1, fuel_grp AS fg1 FROM e
+          QUALIFY ROW_NUMBER() OVER (PARTITION BY vin ORDER BY {order}) = 1
+        ),
+        second_ev AS (
+          SELECT e.vin, e.d_reg AS d2, e.oblast AS ob2, e.person AS p2,
+                 e.make_year AS my2
+          FROM e JOIN first_ev f ON f.vin = e.vin AND e.d_reg > f.d1
+          QUALIFY ROW_NUMBER() OVER (PARTITION BY e.vin ORDER BY
+            e.d_reg, e.oblast, e.person, COALESCE(e.fuel_grp, ''),
+            COALESCE(e.make_year, -1), COALESCE(e.oper_code, '')) = 1
+        ),
+        pairs AS (
+          SELECT f.ob1, s.ob2, YEAR(s.d2) AS yr, s.p2, f.fg1,
+                 CASE WHEN s.my2 IS NULL THEN NULL
+                      ELSE YEAR(s.d2) - s.my2 END AS age,
+                 DATE_DIFF('day', f.d1, s.d2) AS dgap
+          FROM first_ev f JOIN second_ev s ON s.vin = f.vin
+        ),
+        cells AS (
+          SELECT ob1, ob2, yr, p2, fg1,
+                 CASE {bands} ELSE {len(dims.AGE_BANDS) - 1} END AS ab,
+                 COUNT(*) AS n, SUM(dgap) AS sd
+          FROM pairs GROUP BY ALL HAVING COUNT(*) >= {dims.MIN_CELL}
+        )
+        SELECT SUM(n), SUM(sd) FROM cells
+    """).fetchone()
+
+    shipped_n = 0
+    shipped_sd = 0
+    for year in dims.MIGRATION_YEARS:
+        cube = json.loads((dims.DOCS_DATA / "flows" / f"flows_{year}.json")
+                          .read_text(encoding="utf-8"))
+        shipped_n += sum(cube["n"])
+        shipped_sd += sum(cube["sd"])
+
+    check("5b. independent recompute of the exact mean (with the same "
+          f"n >= {dims.MIN_CELL} cell floor)",
+          mine_n == shipped_n and mine_sd == shipped_sd,
+          f"n: recomputed {mine_n:,} shipped {shipped_n:,}; "
+          f"sd: recomputed {mine_sd:,} shipped {shipped_sd:,}")
+
+
 def no_absolute_paths() -> None:
     docs = dims.REPO_ROOT / "docs"
     bad = []
@@ -184,6 +244,7 @@ def main() -> None:
     duplicates_excluded(con)
     size_budget()
     independent_recompute(con)
+    independent_recompute_mean(con)
     no_absolute_paths()
 
     print()

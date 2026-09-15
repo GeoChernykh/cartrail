@@ -276,8 +276,8 @@ export function kpiCard({ label, value, note, spark: sparkValues, color }) {
   const hasSpark = Array.isArray(sparkValues) && sparkValues.some((v) => v != null);
   card.innerHTML =
     `<p class="label">${label}</p><p class="value">${value}</p>` +
-    `<p class="note">${note ?? ''}</p>` +
-    // No empty 52px well when a KPI has no meaningful series to draw.
+    // No stray margin from an empty note, same reasoning as the spark well.
+    (note ? `<p class="note">${note}</p>` : '') +
     (hasSpark ? '<div class="spark"></div>' : '');
   if (hasSpark) {
     queueMicrotask(() => spark(card.querySelector('.spark'), sparkValues, color));
