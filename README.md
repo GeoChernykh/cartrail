@@ -18,7 +18,7 @@ A three-screen static web app over Ukraine's vehicle-registration register:
 The interface is Ukrainian. Registry vocabularies (`FUEL`, `COLOR`, `BODY`,
 `KIND`) are shown exactly as published — nothing is translated.
 
-**Live site:** `https://<user>.github.io/<repo>/` *(fill in after the first deploy)*
+**Live site:** [`https://geochernykh.github.io/cartrail/`](https://geochernykh.github.io/cartrail/)
 
 ## Data
 
